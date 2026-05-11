@@ -4,6 +4,7 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
 
 import { connectDB } from "./config/database.js";
 import { initializeAdmins } from "./config/admins.js";
@@ -26,7 +27,10 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      process.env.CORS_ORIGIN || "https://porta-v2.onrender.com",
+    ],
     credentials: true,
   })
 );
@@ -54,8 +58,7 @@ app.use(cookieParser());
 app.use(logActivity);
 
 // Health check endpoint (used by Render & monitoring tools)
-app.get("/health", (req: Request, res: Response) => {
-  const mongoose = require("mongoose");
+app.get("/health", (_req: Request, res: Response) => {
   const dbState = ["disconnected", "connected", "connecting", "disconnecting"];
   res.status(200).json({
     status: "ok",
