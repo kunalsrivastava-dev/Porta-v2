@@ -53,9 +53,22 @@ app.use(cookieParser());
 // Activity logging middleware
 app.use(logActivity);
 
-// Health check endpoint
+// Health check endpoint (used by Render & monitoring tools)
 app.get("/health", (req: Request, res: Response) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  const mongoose = require("mongoose");
+  const dbState = ["disconnected", "connected", "connecting", "disconnecting"];
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor(process.uptime()),
+    environment: process.env.NODE_ENV || "development",
+    database: dbState[mongoose.connection.readyState] || "unknown",
+    memory: {
+      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + " MB",
+      total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + " MB",
+    },
+    version: "1.0.0",
+  });
 });
 
 // API Routes
