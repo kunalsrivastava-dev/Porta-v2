@@ -44,8 +44,9 @@ export const CardHeader = ({ title, subtitle, action }: CardHeaderProps) => {
 
 interface CardBodyProps {
   children: ReactNode;
+  className?: string;
 }
 
-export const CardBody = ({ children }: CardBodyProps) => {
-  return <div className="text-sm text-grey-800">{children}</div>;
+export const CardBody = ({ children, className }: CardBodyProps) => {
+  return <div className={classNames('text-sm text-grey-800', className)}>{children}</div>;
 };
