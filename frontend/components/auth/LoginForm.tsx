@@ -100,7 +100,7 @@ export const LoginForm = () => {
 
       <div className="mt-6 space-y-3">
         <p className="text-center text-sm text-grey-600">
-          Don't have access?{' '}
+          Don&apos;t have access?{' '}
           <Link
             href="/request-access"
             className="text-black font-medium hover:underline"

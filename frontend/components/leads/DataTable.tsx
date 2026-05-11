@@ -247,7 +247,7 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                                     </Button>
                                     <div className="p-3 bg-yellow-50 border-2 border-yellow-200 rounded-none">
                                       <p className="text-[9px] font-bold text-yellow-800 uppercase leading-tight">
-                                        AI Recommendation: This brand has strong revenue but hasn't been contacted. High priority target.
+                                        AI Recommendation: This brand has strong revenue but hasn&apos;t been contacted. High priority target.
                                       </p>
                                     </div>
                                   </div>
