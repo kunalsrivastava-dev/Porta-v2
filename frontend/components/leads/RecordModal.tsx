@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2 } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardBody } from '@/components/ui/Card';
 import { dataAPI } from '@/lib/api/endpoints';
 
 interface RecordModalProps {

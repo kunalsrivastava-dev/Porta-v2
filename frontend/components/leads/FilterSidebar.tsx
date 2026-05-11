@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Filter, X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { ChevronDown, ChevronRight, Filter } from 'lucide-react';
 
 interface FilterSidebarProps {
   type: 'LEAD' | 'BRAND' | 'INFLUENCER';

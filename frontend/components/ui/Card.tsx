@@ -1,15 +1,18 @@
 'use client';
 
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { classNames } from '@/lib/utils/helpers';
 
 interface CardProps {
   children: ReactNode;
   className?: string;
   onClick?: () => void;
+  onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop?: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
-export const Card = ({ children, className, onClick }: CardProps) => {
+export const Card = ({ children, className, onClick, onDragOver, onDragLeave, onDrop }: CardProps) => {
   return (
     <div
       className={classNames(
@@ -18,6 +21,9 @@ export const Card = ({ children, className, onClick }: CardProps) => {
         className
       )}
       onClick={onClick}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
     >
       {children}
     </div>

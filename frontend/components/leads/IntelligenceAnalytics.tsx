@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, LineChart, Line 
+  PieChart, Pie, Cell 
 } from 'recharts';
 import { Card, CardHeader, CardBody } from '@/components/ui/Card';
 import { adminAPI } from '@/lib/api/endpoints';
@@ -105,7 +105,7 @@ export const IntelligenceAnalytics = ({ type }: AnalyticsProps) => {
                   dataKey="count"
                   nameKey="_id"
                 >
-                  {data.tags.map((entry: any, index: number) => (
+                  {data.tags.map((_entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#000" strokeWidth={2} />
                   ))}
                 </Pie>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Loader2, Edit2, Check, X, Trash2, Plus, Eye, ChevronDown, ChevronUp, ExternalLink, Bookmark, Filter } from 'lucide-react';
+import { Search, Loader2, Edit2, Trash2, Plus, ExternalLink, Bookmark, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardBody } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -32,7 +32,7 @@ export const DataTable = ({ type, title }: DataTableProps) => {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<any>({});
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<DataRecord | undefined>();
   const [showFilters, setShowFilters] = useState(true);

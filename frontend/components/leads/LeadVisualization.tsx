@@ -70,7 +70,7 @@ export const LeadVisualization = () => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {pieData.map((entry: any, index: number) => (
+                {pieData.map((_entry: any, index: number) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
