@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import axios from 'axios';
+import api from '@/lib/api/client';
 import { useAuthStore } from '@/store/authStore';
 import { Loader2 } from 'lucide-react';
 
@@ -15,12 +15,7 @@ export const LeadVisualization = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/leads/stats`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          withCredentials: true
-        });
+        const response = await api.get('/leads/stats');
         setStats(response.data.data);
       } catch (error) {
         console.error('Failed to fetch stats', error);
