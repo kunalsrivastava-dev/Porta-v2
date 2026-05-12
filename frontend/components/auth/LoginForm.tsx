@@ -96,23 +96,22 @@ export const LoginForm = () => {
       </form>
 
       <div className="mt-8 pt-8 border-t-2 border-grey-100 space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-grey-500 font-medium">New Operator?</p>
-          <Link
-            href="/request-access"
-            className="text-black font-black text-sm uppercase tracking-wider hover:underline"
+        <Link href="/request-access" className="w-full block">
+          <Button
+            variant="outline"
+            className="w-full h-12 border-2 border-black rounded-none text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all"
           >
-            Request Access
-          </Link>
-        </div>
+            Request Access from Admin
+          </Button>
+        </Link>
         
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-grey-500 font-medium">Approved Email?</p>
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <p className="text-xs text-grey-500 font-bold uppercase tracking-wider">Already Approved?</p>
           <Link
             href="/register"
-            className="text-black font-black text-sm uppercase tracking-wider hover:underline"
+            className="text-black font-black text-xs uppercase tracking-widest hover:underline"
           >
-            Sign Up Now
+            Create Account
           </Link>
         </div>
       </div>

@@ -71,8 +71,10 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
 
   const dataEntryNavItems = [
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
+    { label: 'Brands', href: '/dashboard/brands', icon: <Building2 size={18} /> },
+    { label: 'Influencers', href: '/dashboard/influencers', icon: <Sparkles size={18} /> },
     { label: 'Upload Data', href: '/dashboard/upload', icon: <Upload size={18} /> },
-    { label: 'View Data', href: '/dashboard/data', icon: <Database size={18} /> },
+    { label: 'View Leads', href: '/dashboard/data', icon: <Database size={18} /> },
   ];
 
   const navItems = user?.role === 'ADMIN' ? adminNavItems

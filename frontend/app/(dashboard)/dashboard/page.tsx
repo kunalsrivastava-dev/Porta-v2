@@ -109,8 +109,10 @@ export default function DashboardPage() {
           )}
           {user?.role === 'DATA_ENTRY' && (
             <>
+              <QuickAction href="/dashboard/brands" label="Brands" desc="Brand intelligence ecosystem" />
+              <QuickAction href="/dashboard/influencers" label="Influencers" desc="Influencer discovery database" />
               <QuickAction href="/dashboard/upload" label="Upload Data" desc="Import CSV files" />
-              <QuickAction href="/dashboard/data" label="View Data" desc="Browse all records" />
+              <QuickAction href="/dashboard/data" label="Leads" desc="Manage outreach pipeline" />
             </>
           )}
         </div>
