@@ -37,7 +37,7 @@ export class AuthService {
 
     if (!accessRequest) {
       throw new Error(
-        "Your email has not been approved for access. Please contact admin."
+        "Account creation failed: This email address has not been pre-approved by an administrator. Please submit an access request first."
       );
     }
 

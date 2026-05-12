@@ -56,35 +56,32 @@ export const LoginForm = () => {
   };
 
   return (
-    <Card className="p-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-black">PORTA</h1>
-        <p className="text-grey-600 mt-2">Enterprise Portal</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <Card className="p-6 sm:p-10 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <Input
-          label="Email"
+          label="Operational Email"
           type="email"
           name="email"
-          placeholder="Enter your email"
+          placeholder="name@company.com"
           value={formData.email}
           onChange={handleChange}
           required
+          className="h-12 border-2 border-grey-200 focus:border-black transition-colors"
         />
 
         <Input
-          label="Password"
+          label="Security Password"
           type="password"
           name="password"
-          placeholder="Enter your password"
+          placeholder="••••••••"
           value={formData.password}
           onChange={handleChange}
           required
+          className="h-12 border-2 border-grey-200 focus:border-black transition-colors"
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-none text-sm font-bold animate-shake">
             {error}
           </div>
         )}
@@ -92,22 +89,22 @@ export const LoginForm = () => {
         <Button
           type="submit"
           isLoading={isLoading}
-          className="w-full"
+          className="w-full h-14 bg-black text-white hover:bg-grey-900 rounded-none text-lg font-black uppercase tracking-widest transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
         >
-          Sign In
+          {isLoading ? 'Authenticating...' : 'Establish Session'}
         </Button>
       </form>
 
-      <div className="mt-6 space-y-3">
-        <p className="text-center text-sm text-grey-600">
-          Don&apos;t have access?{' '}
-          <Link
-            href="/request-access"
-            className="text-black font-medium hover:underline"
-          >
-            Request Access
-          </Link>
+      <div className="mt-8 pt-8 border-t-2 border-grey-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-sm text-grey-500 font-medium">
+          New Operator?
         </p>
+        <Link
+          href="/request-access"
+          className="text-black font-black text-sm uppercase tracking-wider hover:underline"
+        >
+          Request Access
+        </Link>
       </div>
     </Card>
   );
