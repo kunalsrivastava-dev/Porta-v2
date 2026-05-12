@@ -9,7 +9,6 @@ import {
   Building2,
   Users,
   ClipboardList,
-  Activity,
   LogOut,
   Menu,
   X,
@@ -57,7 +56,6 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     { label: 'Influencers', href: '/dashboard/influencers', icon: <Sparkles size={18} /> },
     { label: 'Users', href: '/dashboard/users', icon: <Users size={18} /> },
     { label: 'Requests', href: '/dashboard/requests', icon: <ClipboardList size={18} />, badge: pendingCount > 0 ? pendingCount : null },
-    { label: 'Monitoring', href: '/dashboard/monitoring', icon: <Activity size={18} /> },
   ];
 
   const internNavItems = [

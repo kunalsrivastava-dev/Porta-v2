@@ -117,16 +117,16 @@ export class AdminController {
     try {
       const { email, role } = req.body;
 
-      if (!email || !role || !["DATA_ENTRY", "INTERN"].includes(role)) {
+      if (!email || !role || !["ADMIN", "DATA_ENTRY", "INTERN"].includes(role)) {
         return res.status(400).json({
           success: false,
-          message: "Email and valid role (DATA_ENTRY or INTERN) are required",
+          message: "Email and valid role (ADMIN, DATA_ENTRY or INTERN) are required",
         });
       }
 
       const result = await AccessRequestService.inviteUser(
         email,
-        role as "DATA_ENTRY" | "INTERN",
+        role as "ADMIN" | "DATA_ENTRY" | "INTERN",
         req.user!.userId
       );
 

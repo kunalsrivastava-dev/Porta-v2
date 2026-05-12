@@ -51,7 +51,6 @@ export default function DashboardPage() {
               <QuickAction href="/dashboard/influencers" label="Influencers" desc="Influencer discovery" />
               <QuickAction href="/dashboard/users" label="Users" desc="Manage team access" />
               <QuickAction href="/dashboard/requests" label="Requests" desc="Pending access approvals" />
-              <QuickAction href="/dashboard/monitoring" label="Monitoring" desc="Activity logs & audit" />
             </>
           )}
           {user?.role === 'INTERN' && (

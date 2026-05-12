@@ -18,9 +18,7 @@ router.patch("/requests/:requestId/reject", AdminController.rejectRequest);
 router.post("/invite", AdminController.inviteUser);
 router.post("/revoke", AdminController.revokeAccess);
  
-// Monitoring (Admins & Interns)
-router.get("/monitoring/logs", authorize(["ADMIN"]), MonitoringController.getActivityLogs);
-router.get("/monitoring/stats", MonitoringController.getSystemStats);
+// Intelligence
 router.get("/intelligence-stats", AnalyticsController.getIntelligenceStats);
 
 export default router;

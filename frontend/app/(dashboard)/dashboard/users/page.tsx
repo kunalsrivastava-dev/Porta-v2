@@ -27,7 +27,7 @@ export default function UsersPage() {
   // Invite Modal State
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'DATA_ENTRY' | 'INTERN'>('INTERN');
+  const [inviteRole, setInviteRole] = useState<'ADMIN' | 'DATA_ENTRY' | 'INTERN'>('INTERN');
   const [isInviting, setIsInviting] = useState(false);
 
   useEffect(() => {
@@ -95,9 +95,11 @@ export default function UsersPage() {
       await adminAPI.inviteUser(inviteEmail, inviteRole);
       setShowInviteModal(false);
       setInviteEmail('');
-      if (activeTab === 'invitations') fetchData();
+      // Refresh data for both tabs
+      fetchData();
+      alert('SUCCESS: User identity pre-authorized and added to grid.');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to invite user');
+      alert(err.response?.data?.message || 'CRITICAL ERROR: Authorization failed');
     } finally {
       setIsInviting(false);
     }
@@ -242,18 +244,25 @@ export default function UsersPage() {
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-grey-400">Security Clearance (Role)</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setInviteRole('ADMIN')}
+                    className={`h-12 border-4 border-black text-[9px] font-black uppercase tracking-widest transition-all ${inviteRole === 'ADMIN' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
+                  >
+                    Admin
+                  </button>
                   <button
                     type="button"
                     onClick={() => setInviteRole('DATA_ENTRY')}
-                    className={`h-12 border-4 border-black text-[10px] font-black uppercase tracking-widest transition-all ${inviteRole === 'DATA_ENTRY' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
+                    className={`h-12 border-4 border-black text-[9px] font-black uppercase tracking-widest transition-all ${inviteRole === 'DATA_ENTRY' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
                   >
                     Data Entry
                   </button>
                   <button
                     type="button"
                     onClick={() => setInviteRole('INTERN')}
-                    className={`h-12 border-4 border-black text-[10px] font-black uppercase tracking-widest transition-all ${inviteRole === 'INTERN' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
+                    className={`h-12 border-4 border-black text-[9px] font-black uppercase tracking-widest transition-all ${inviteRole === 'INTERN' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
                   >
                     Intern
                   </button>
