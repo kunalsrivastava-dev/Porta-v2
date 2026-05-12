@@ -7,7 +7,7 @@ interface IAccessRequest {
   approvedBy?: mongoose.Types.ObjectId;
   approvedAt?: Date;
   rejectionReason?: string;
-  assignedRole?: "DATA_ENTRY" | "INTERN";
+  assignedRole?: "ADMIN" | "DATA_ENTRY" | "INTERN";
 }
 
 const accessRequestSchema = new mongoose.Schema<IAccessRequest>(
@@ -39,7 +39,7 @@ const accessRequestSchema = new mongoose.Schema<IAccessRequest>(
     },
     assignedRole: {
       type: String,
-      enum: ["DATA_ENTRY", "INTERN"],
+      enum: ["ADMIN", "DATA_ENTRY", "INTERN"],
     },
   },
   {
