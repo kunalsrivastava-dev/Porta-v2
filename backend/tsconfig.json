@@ -13,8 +13,8 @@
     "declaration": false,
     "declarationMap": false,
     "sourceMap": true,
-    "moduleResolution": "node"
+    "moduleResolution": "NodeNext"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "api/**/*"],
   "exclude": ["node_modules"]
 }

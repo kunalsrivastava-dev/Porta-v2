@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 
 export const connectDB = async (retries = 5): Promise<void> => {
   const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/porta";
-  
+
+  // Already connected — reuse the existing connection (important for serverless warm invocations)
+  if (mongoose.connection.readyState === 1) return;
+
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       await mongoose.connect(MONGODB_URI, {
@@ -14,10 +17,9 @@ export const connectDB = async (retries = 5): Promise<void> => {
     } catch (error) {
       console.error(`✗ MongoDB connection attempt ${attempt}/${retries} failed:`, (error as Error).message);
       if (attempt === retries) {
-        console.error("✗ All MongoDB connection attempts failed. Exiting.");
-        process.exit(1);
+        // Throw instead of process.exit so serverless can return a 503
+        throw new Error("All MongoDB connection attempts failed");
       }
-      console.log(`  Retrying in 3 seconds...`);
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }

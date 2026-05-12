@@ -21,9 +21,8 @@ import dataRoutes from "./routes/data.routes.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Security middleware
+// ── Security ──────────────────────────────────────────────────────────────────
 app.use(helmet());
 
 const allowedOrigins = [
@@ -39,9 +38,8 @@ if (process.env.CORS_ORIGIN) {
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
+      // Allow requests with no origin (server-to-server, mobile, curl)
       if (!origin) return callback(null, true);
-      
       if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
         callback(null, true);
       } else {
@@ -52,98 +50,81 @@ app.use(
   })
 );
 
-// Rate limiting
+// ── Rate limiting ─────────────────────────────────────────────────────────────
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5, // limit login attempts
+  max: 5,
   skipSuccessfulRequests: true,
 });
 
 app.use(limiter);
 
-// Body parsers
+// ── Body parsers ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 
-// Activity logging middleware
+// ── Lazy DB connection middleware (required for Vercel serverless) ─────────────
+// In serverless, app.listen() is never called so we must connect on first request.
+// Mongoose connection is cached across warm invocations automatically.
+let dbInitialized = false;
+app.use(async (_req: Request, res: Response, next) => {
+  if (!dbInitialized || mongoose.connection.readyState === 0) {
+    try {
+      await connectDB();
+      if (!dbInitialized) {
+        await initializeAdmins();
+        dbInitialized = true;
+      }
+    } catch (err) {
+      console.error("DB connection failed:", err);
+      return res.status(503).json({ success: false, message: "Database unavailable" });
+    }
+  }
+  next();
+});
+
+// ── Activity logging ──────────────────────────────────────────────────────────
 app.use(logActivity);
 
-// Health check endpoint (used by Render & monitoring tools)
+// ── Health check ──────────────────────────────────────────────────────────────
 app.get("/health", (_req: Request, res: Response) => {
   const dbState = ["disconnected", "connected", "connecting", "disconnecting"];
   res.status(200).json({
     status: "ok",
     timestamp: new Date().toISOString(),
-    uptime: Math.floor(process.uptime()),
     environment: process.env.NODE_ENV || "development",
     database: dbState[mongoose.connection.readyState] || "unknown",
-    memory: {
-      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + " MB",
-      total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + " MB",
-    },
-    version: "1.0.0",
   });
 });
 
-// API Routes
+// ── API Routes ────────────────────────────────────────────────────────────────
 app.use("/api/auth", loginLimiter, authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/data", dataRoutes);
 
-// 404 handler
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
+// ── 404 handler ───────────────────────────────────────────────────────────────
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ success: false, message: "Route not found" });
 });
 
-// Error handler (must be last)
+// ── Error handler ─────────────────────────────────────────────────────────────
 app.use(errorHandler);
 
-// Server startup function
-const startServer = async () => {
-  try {
-    // Connect to database
-    await connectDB();
-
-    // Initialize admin users from admins.txt
-    await initializeAdmins();
-
-    // Start server
-    app.listen(PORT, () => {
-      console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-      console.log(`✓ PORTA Server is running`);
-      console.log(`✓ Port: ${PORT}`);
-      console.log(`✓ Environment: ${process.env.NODE_ENV || "development"}`);
-      console.log(`✓ API: http://localhost:${PORT}/api`);
-      console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
-    });
-  } catch (error) {
-    console.error("✗ Failed to start server:", error);
-    process.exit(1);
-  }
-};
-
-// Start server
-startServer();
-
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received, shutting down gracefully...");
-  process.exit(0);
+// ── Start Server (Required for Render) ──────────────────────────────────────
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  console.log(`✓ PORTA Server running on port ${PORT}`);
+  console.log(`✓ API: http://localhost:${PORT}/api`);
+  console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
 });
 
-process.on("SIGINT", () => {
-  console.log("SIGINT received, shutting down gracefully...");
-  process.exit(0);
-});
-
+// ── Export for potential serverless use ──────────────────────────────────────
 export default app;
