@@ -4,22 +4,23 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Users, 
-  Database, 
-  ClipboardList, 
-  Activity, 
-  LogOut, 
-  Menu, 
+import {
+  LayoutDashboard,
+  Building2,
+  Users,
+  Database,
+  ClipboardList,
+  Activity,
+  LogOut,
+  Menu,
   X,
-  ChevronLeft, 
+  ChevronLeft,
   ChevronRight,
   Upload,
   CheckSquare,
   Sparkles
 } from 'lucide-react';
+import { adminAPI } from '@/lib/api/endpoints';
 
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
@@ -32,6 +33,24 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (user?.role === 'ADMIN') {
+      const fetchRequests = async () => {
+        try {
+          const res = await adminAPI.getPendingRequests(1, 1);
+          setPendingCount(res.data.total);
+        } catch (err) {
+          console.error('Failed to fetch pending requests count', err);
+        }
+      };
+      fetchRequests();
+      // Poll every 2 minutes for new requests
+      const interval = setInterval(fetchRequests, 120000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const adminNavItems = [
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
@@ -39,7 +58,7 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     { label: 'Influencers', href: '/dashboard/influencers', icon: <Sparkles size={18} /> },
     { label: 'Leads', href: '/dashboard/data', icon: <Database size={18} /> },
     { label: 'Users', href: '/dashboard/users', icon: <Users size={18} /> },
-    { label: 'Requests', href: '/dashboard/requests', icon: <ClipboardList size={18} /> },
+    { label: 'Requests', href: '/dashboard/requests', icon: <ClipboardList size={18} />, badge: pendingCount > 0 ? pendingCount : null },
     { label: 'Monitoring', href: '/dashboard/monitoring', icon: <Activity size={18} /> },
   ];
 
@@ -58,7 +77,7 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
 
   const navItems = user?.role === 'ADMIN' ? adminNavItems
     : user?.role === 'DATA_ENTRY' ? dataEntryNavItems
-    : internNavItems;
+      : internNavItems;
 
   useEffect(() => {
     const check = () => {
@@ -87,21 +106,28 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     router.push('/login');
   };
 
-  const NavItem = ({ item }: { item: typeof navItems[0] }) => {
+  const NavItem = ({ item }: { item: { label: string; href: string; icon: JSX.Element; badge?: number | null } }) => {
     const isActive = pathname === item.href;
     return (
       <Link
         href={item.href}
         onClick={() => isMobile && setMobileOpen(false)}
         title={collapsed && !isMobile ? item.label : ''}
-        className={`flex items-center gap-3 px-3 py-2.5 border-2 transition-all duration-150 font-bold uppercase text-[10px] tracking-widest group ${
-          isActive
-            ? 'bg-black text-white border-black'
-            : 'text-black border-transparent hover:border-black hover:bg-grey-50'
-        } ${collapsed && !isMobile ? 'justify-center' : ''}`}
+        className={`flex items-center gap-3 px-3 py-2.5 border-2 transition-all duration-150 font-bold uppercase text-[10px] tracking-widest group ${isActive
+          ? 'bg-black text-white border-black'
+          : 'text-black border-transparent hover:border-black hover:bg-grey-50'
+          } ${collapsed && !isMobile ? 'justify-center' : ''}`}
       >
         <span className="shrink-0">{item.icon}</span>
-        {(!collapsed || isMobile) && <span className="truncate">{item.label}</span>}
+        {(!collapsed || isMobile) && <span className="truncate flex-1">{item.label}</span>}
+        {item.badge && (!collapsed || isMobile) && (
+          <span className="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-none font-black animate-pulse">
+            {item.badge}
+          </span>
+        )}
+        {item.badge && collapsed && !isMobile && (
+          <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+        )}
       </Link>
     );
   };
@@ -176,11 +202,10 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-screen border-r-4 border-black z-50 overflow-hidden transition-all duration-300 ${
-          isMobile
-            ? mobileOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full'
-            : collapsed ? 'w-20' : 'w-64'
-        }`}
+        className={`fixed left-0 top-0 h-screen border-r-4 border-black z-50 overflow-hidden transition-all duration-300 ${isMobile
+          ? mobileOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full'
+          : collapsed ? 'w-20' : 'w-64'
+          }`}
       >
         <SidebarBody />
       </div>

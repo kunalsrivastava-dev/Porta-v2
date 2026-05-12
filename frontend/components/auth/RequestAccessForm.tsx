@@ -6,8 +6,7 @@ import { authAPI } from '@/lib/api/endpoints';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Check, FileText } from 'lucide-react';
+import { Check, FileText, ChevronLeft } from 'lucide-react';
 
 export const RequestAccessForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +22,7 @@ export const RequestAccessForm = () => {
     }
 
     setIsLoading(true);
+    setError('');
     try {
       const response = await authAPI.checkEmailStatus(email);
       if (response.data.isApproved) {
@@ -31,7 +31,8 @@ export const RequestAccessForm = () => {
         setRequestStatus('pending');
       }
     } catch (err: any) {
-      setError('Error checking status');
+      setError('No request found for this email.');
+      setRequestStatus(null);
     } finally {
       setIsLoading(false);
     }
@@ -56,43 +57,53 @@ export const RequestAccessForm = () => {
 
   if (requestStatus === 'approved') {
     return (
-      <Card className="p-8 border-4 border-black text-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="p-4 bg-black text-white rounded-full">
-            <Check size={48} />
+      <Card className="p-6 sm:p-10 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+        <div className="flex flex-col items-center space-y-6">
+          <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center shadow-lg">
+            <Check size={40} />
           </div>
-          <h2 className="text-xl font-black text-black uppercase">Email Approved!</h2>
-          <p className="text-grey-600">
-            Your email has been approved. You can now create an account.
-          </p>
-          <Link href="/register">
-            <Button className="w-full">Create Account</Button>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-black uppercase tracking-tight">Approved!</h2>
+            <p className="text-grey-600 font-medium max-w-xs">
+              Your email <span className="font-bold text-black">{email}</span> is cleared for registration.
+            </p>
+          </div>
+          <Link href="/register" className="w-full">
+            <Button className="w-full h-14 bg-black text-white hover:bg-grey-900 rounded-none text-lg font-black uppercase tracking-widest">
+              Create Account
+            </Button>
           </Link>
-          <p className="text-sm text-grey-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-black font-medium hover:underline">
-              Sign In
-            </Link>
-          </p>
+          <Link href="/login" className="flex items-center text-sm font-bold uppercase tracking-widest hover:underline">
+            <ChevronLeft size={16} className="mr-1" /> Back to Sign In
+          </Link>
         </div>
       </Card>
     );
   }
 
-  if (success) {
+  if (success || requestStatus === 'pending') {
     return (
-      <Card className="p-8 border-4 border-black text-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="p-4 bg-black text-white rounded-full">
-            <FileText size={48} />
+      <Card className="p-6 sm:p-10 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+        <div className="flex flex-col items-center space-y-6">
+          <div className="w-20 h-20 bg-grey-100 text-black rounded-full flex items-center justify-center shadow-inner border-2 border-black">
+            <FileText size={40} />
           </div>
-          <h2 className="text-xl font-black text-black uppercase">Request Submitted!</h2>
-          <p className="text-grey-600">
-            Your access request has been sent to the admin. Please wait for approval.
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-black uppercase tracking-tight">Request Logged</h2>
+            <p className="text-grey-600 font-medium">
+              We&apos;ve received your request for <span className="font-bold text-black">{email}</span>.
+            </p>
+          </div>
+          <div className="py-2 px-4 border-2 border-black bg-yellow-100 font-bold uppercase tracking-widest text-xs">
+            Status: Pending Approval
+          </div>
+          <p className="text-sm text-grey-500 italic max-w-xs">
+            An administrator will review your credentials shortly. You will be able to register once approved.
           </p>
-          <Badge variant="info">Status: Pending</Badge>
-          <Link href="/login">
-            <Button variant="secondary" className="w-full">Back to Login</Button>
+          <Link href="/login" className="w-full">
+            <Button variant="secondary" className="w-full h-14 border-2 border-black rounded-none text-lg font-black uppercase tracking-widest">
+              Return to Login
+            </Button>
           </Link>
         </div>
       </Card>
@@ -100,60 +111,58 @@ export const RequestAccessForm = () => {
   }
 
   return (
-    <Card className="p-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-black">Request Access</h1>
-        <p className="text-grey-600 mt-2">
-          Enter your email to request access to PORTA
+    <Card className="p-6 sm:p-10 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <div className="mb-8">
+        <h1 className="text-3xl font-black text-black uppercase tracking-tight">Request Access</h1>
+        <p className="text-grey-600 mt-2 font-medium">
+          New operators must be cleared by HQ before account creation.
         </p>
       </div>
 
-      <form onSubmit={handleRequestAccess} className="space-y-4">
+      <form onSubmit={handleRequestAccess} className="space-y-6">
         <Input
-          label="Email Address"
+          label="Operational Email"
           type="email"
-          placeholder="Enter your email"
+          placeholder="name@company.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="h-12 border-2 border-grey-200 focus:border-black transition-colors"
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-none text-sm font-bold">
             {error}
           </div>
         )}
 
-        <div className="space-y-2">
+        <div className="flex flex-col gap-3 pt-2">
+          <Button
+            type="submit"
+            isLoading={isLoading}
+            className="w-full h-14 bg-black text-white hover:bg-grey-900 rounded-none text-lg font-black uppercase tracking-widest transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
+            Submit Request
+          </Button>
           <Button
             type="button"
             variant="secondary"
             onClick={handleCheckStatus}
             isLoading={isLoading}
-            className="w-full"
+            className="w-full h-14 border-2 border-black bg-white text-black hover:bg-grey-50 rounded-none text-lg font-black uppercase tracking-widest"
           >
-            Check Status
-          </Button>
-          <Button
-            type="submit"
-            isLoading={isLoading}
-            className="w-full"
-          >
-            Request Access
+            Check My Status
           </Button>
         </div>
       </form>
 
-      <div className="mt-6">
-        <p className="text-center text-sm text-grey-600">
-          Have access?{' '}
-          <Link
-            href="/login"
-            className="text-black font-medium hover:underline"
-          >
-            Sign In
-          </Link>
-        </p>
+      <div className="mt-8 pt-8 border-t-2 border-grey-100 text-center">
+        <Link
+          href="/login"
+          className="text-black font-black text-sm uppercase tracking-wider hover:underline inline-flex items-center"
+        >
+          <ChevronLeft size={16} className="mr-1" /> Already Have Access? Sign In
+        </Link>
       </div>
     </Card>
   );

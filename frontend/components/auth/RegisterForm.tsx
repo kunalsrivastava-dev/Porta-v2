@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
-import { Check } from 'lucide-react';
+import { Check, ChevronLeft } from 'lucide-react';
 import Cookies from 'js-cookie';
 
 export const RegisterForm = () => {
@@ -35,7 +35,6 @@ export const RegisterForm = () => {
     setSuccess(false);
     setIsLoading(true);
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
@@ -51,25 +50,22 @@ export const RegisterForm = () => {
 
       const { token, user } = response.data;
 
-      // Set token in cookie
       Cookies.set('token', token, {
         expires: 7,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
       });
 
-      // Update store
       setToken(token);
       setUser(user);
       setAuthenticated(true);
       setSuccess(true);
 
-      // Redirect to dashboard
       setTimeout(() => {
         router.push('/dashboard');
-      }, 1000);
+      }, 1500);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message || 'Registration failed. Is your email approved?');
     } finally {
       setIsLoading(false);
     }
@@ -77,26 +73,33 @@ export const RegisterForm = () => {
 
   if (success) {
     return (
-      <Card className="p-8 text-center border-4 border-black">
-        <div className="flex justify-center mb-4">
-          <div className="p-4 bg-black text-white rounded-full">
-            <Check size={48} />
+      <Card className="p-6 sm:p-10 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+        <div className="flex flex-col items-center space-y-6">
+          <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center shadow-lg animate-bounce">
+            <Check size={40} />
           </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-black uppercase tracking-tight">Identity Verified</h2>
+            <p className="text-grey-600 font-medium">
+              Welcome to the grid, <span className="font-bold text-black">{formData.name}</span>.
+            </p>
+          </div>
+          <p className="text-sm text-grey-500 animate-pulse">Initializing operational environment...</p>
         </div>
-        <h2 className="text-xl font-black text-black mb-2 uppercase">Success!</h2>
-        <p className="text-grey-600">Redirecting to dashboard...</p>
       </Card>
     );
   }
 
   return (
-    <Card className="p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-black">Create Account</h1>
-        <p className="text-grey-600 mt-2">Join PORTA</p>
+    <Card className="p-6 sm:p-10 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <div className="mb-8">
+        <h1 className="text-3xl font-black text-black uppercase tracking-tight">Establish Account</h1>
+        <p className="text-grey-600 mt-2 font-medium">
+          Only approved emails can proceed with registration.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <Input
           label="Full Name"
           type="text"
@@ -105,40 +108,46 @@ export const RegisterForm = () => {
           value={formData.name}
           onChange={handleChange}
           required
+          className="h-12 border-2 border-grey-200 focus:border-black transition-colors"
         />
 
         <Input
-          label="Email"
+          label="Approved Email"
           type="email"
           name="email"
-          placeholder="Enter your email"
+          placeholder="name@company.com"
           value={formData.email}
           onChange={handleChange}
           required
+          className="h-12 border-2 border-grey-200 focus:border-black transition-colors"
         />
 
-        <Input
-          label="Password"
-          type="password"
-          name="password"
-          placeholder="At least 6 characters"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Password"
+            type="password"
+            name="password"
+            placeholder="Min 6 chars"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="h-12 border-2 border-grey-200 focus:border-black transition-colors"
+          />
 
-        <Input
-          label="Confirm Password"
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm your password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-        />
+          <Input
+            label="Confirm"
+            type="password"
+            name="confirmPassword"
+            placeholder="Repeat pass"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            className="h-12 border-2 border-grey-200 focus:border-black transition-colors"
+          />
+        </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-none text-sm font-bold">
             {error}
           </div>
         )}
@@ -146,22 +155,19 @@ export const RegisterForm = () => {
         <Button
           type="submit"
           isLoading={isLoading}
-          className="w-full"
+          className="w-full h-14 bg-black text-white hover:bg-grey-900 rounded-none text-lg font-black uppercase tracking-widest transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          Create Account
+          {isLoading ? 'Processing...' : 'Activate Account'}
         </Button>
       </form>
 
-      <div className="mt-6">
-        <p className="text-center text-sm text-grey-600">
-          Already have an account?{' '}
-          <Link
-            href="/login"
-            className="text-black font-medium hover:underline"
-          >
-            Sign In
-          </Link>
-        </p>
+      <div className="mt-8 pt-8 border-t-2 border-grey-100 text-center">
+        <Link
+          href="/login"
+          className="text-black font-black text-sm uppercase tracking-wider hover:underline inline-flex items-center"
+        >
+          <ChevronLeft size={16} className="mr-1" /> Back to Sign In
+        </Link>
       </div>
     </Card>
   );

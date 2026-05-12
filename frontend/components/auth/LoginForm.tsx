@@ -95,16 +95,26 @@ export const LoginForm = () => {
         </Button>
       </form>
 
-      <div className="mt-8 pt-8 border-t-2 border-grey-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm text-grey-500 font-medium">
-          New Operator?
-        </p>
-        <Link
-          href="/request-access"
-          className="text-black font-black text-sm uppercase tracking-wider hover:underline"
-        >
-          Request Access
-        </Link>
+      <div className="mt-8 pt-8 border-t-2 border-grey-100 space-y-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-grey-500 font-medium">New Operator?</p>
+          <Link
+            href="/request-access"
+            className="text-black font-black text-sm uppercase tracking-wider hover:underline"
+          >
+            Request Access
+          </Link>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-grey-500 font-medium">Approved Email?</p>
+          <Link
+            href="/register"
+            className="text-black font-black text-sm uppercase tracking-wider hover:underline"
+          >
+            Sign Up Now
+          </Link>
+        </div>
       </div>
     </Card>
   );
