@@ -9,6 +9,9 @@ export const authAPI = {
   
   logout: () => api.post('/auth/logout'),
   
+  verifyEmail: (email: string) =>
+    api.post('/auth/verify-email', { email }),
+  
   requestAccess: (email: string) =>
     api.post('/auth/request-access', { email }),
   
@@ -59,6 +62,12 @@ export const adminAPI = {
 
   getIntelligenceStats: (params: { type: string }) =>
     api.get('/admin/intelligence-stats', { params }),
+
+  inviteUser: (email: string, role: string) =>
+    api.post('/admin/invite', { email, role }),
+
+  revokeAccess: (email: string) =>
+    api.post('/admin/revoke', { email }),
 };
 
 export const dataAPI = {

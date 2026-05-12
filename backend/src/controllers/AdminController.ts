@@ -111,4 +111,61 @@ export class AdminController {
       });
     }
   }
+
+  // Invite a new user
+  static async inviteUser(req: AuthRequest, res: Response) {
+    try {
+      const { email, role } = req.body;
+
+      if (!email || !role || !["DATA_ENTRY", "INTERN"].includes(role)) {
+        return res.status(400).json({
+          success: false,
+          message: "Email and valid role (DATA_ENTRY or INTERN) are required",
+        });
+      }
+
+      const result = await AccessRequestService.inviteUser(
+        email,
+        role as "DATA_ENTRY" | "INTERN",
+        req.user!.userId
+      );
+
+      return res.status(201).json({
+        success: true,
+        message: "User invited successfully",
+        data: result,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  // Revoke access
+  static async revokeAccess(req: AuthRequest, res: Response) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: "Email is required",
+        });
+      }
+
+      await AccessRequestService.revokeAccess(email, req.user!.userId);
+
+      return res.json({
+        success: true,
+        message: "Access revoked successfully",
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 }

@@ -115,4 +115,60 @@ export class AccessRequestService {
     });
     return !!request;
   }
+
+  // Invite a user manually (admin only)
+  static async inviteUser(email: string, role: "DATA_ENTRY" | "INTERN", adminId: string) {
+    const existing = await AccessRequest.findOne({ email: email.toLowerCase() });
+    
+    if (existing && existing.status === "approved") {
+      throw new Error("This email is already approved");
+    }
+
+    let request;
+    if (existing) {
+      existing.status = "approved";
+      existing.assignedRole = role;
+      existing.approvedBy = adminId as any;
+      existing.approvedAt = new Date();
+      request = await existing.save();
+    } else {
+      request = await AccessRequest.create({
+        email: email.toLowerCase(),
+        status: "approved",
+        assignedRole: role,
+        approvedBy: adminId as any,
+        approvedAt: new Date(),
+        requestedAt: new Date()
+      });
+    }
+
+    // Log activity
+    await ActivityLog.create({
+      userId: adminId,
+      action: "APPROVE_REQUEST", // Reusing action or define INVITE_USER
+      resource: "AccessRequest",
+      details: { email: email.toLowerCase(), role, manual: true },
+    });
+
+    return request;
+  }
+
+  // Revoke access / Remove approved email
+  static async revokeAccess(email: string, adminId: string) {
+    const result = await AccessRequest.findOneAndDelete({ email: email.toLowerCase() });
+    
+    // Also deactivate the user if they exist
+    const User = (await import("../models/User.js")).default;
+    await User.findOneAndUpdate({ email: email.toLowerCase() }, { isActive: false });
+
+    // Log activity
+    await ActivityLog.create({
+      userId: adminId,
+      action: "DELETE_USER",
+      resource: "User",
+      details: { email: email.toLowerCase(), revoked: true },
+    });
+
+    return result;
+  }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Loader2, Edit2, Trash2, Plus, ExternalLink, Bookmark, Filter } from 'lucide-react';
+import { Search, Loader2, Trash2, Plus, ExternalLink, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardBody } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -9,7 +9,6 @@ import { dataAPI } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
 import { RecordModal } from './RecordModal';
 import { FilterSidebar } from './FilterSidebar';
-import { IntelligenceAnalytics } from './IntelligenceAnalytics';
 
 interface DataRecord {
   _id: string;
@@ -67,12 +66,7 @@ export const DataTable = ({ type, title }: DataTableProps) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  const getTagColor = (tag: string) => {
-    if (tag.includes('Opportunity')) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    if (tag.includes('Fast') || tag.includes('Viral')) return 'bg-green-100 text-green-800 border-green-200';
-    if (tag.includes('Ready') || tag.includes('Mega')) return 'bg-black text-white border-black';
-    return 'bg-grey-100 text-grey-800 border-grey-200';
-  };
+
 
   const handleExport = () => {
     if (records.length === 0) return;
@@ -98,8 +92,6 @@ export const DataTable = ({ type, title }: DataTableProps) => {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Dashboard Analytics Section */}
-      <IntelligenceAnalytics type={type} />
 
       <div className="flex gap-6 relative">
         {/* Filter Sidebar */}
@@ -154,7 +146,6 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                 <thead>
                   <tr className="bg-black text-[10px] uppercase font-black text-white tracking-widest">
                     <th className="px-6 py-4 w-10 text-center">#</th>
-                    <th className="px-6 py-4">Intelligence Tags</th>
                     {dynamicHeaders.map(header => (
                       <th key={header} className="px-6 py-4">{header.replace('_', ' ')}</th>
                     ))}
@@ -164,14 +155,14 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                 <tbody className="text-sm">
                   {loading ? (
                     <tr>
-                      <td colSpan={dynamicHeaders.length + 3} className="px-6 py-20 text-center">
+                      <td colSpan={dynamicHeaders.length + 2} className="px-6 py-20 text-center">
                         <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                        <p className="font-bold uppercase tracking-widest text-xs">Syncing Intelligence...</p>
+                        <p className="font-bold uppercase tracking-widest text-xs">Syncing Database...</p>
                       </td>
                     </tr>
                   ) : records.length === 0 ? (
                     <tr>
-                      <td colSpan={dynamicHeaders.length + 3} className="px-6 py-20 text-center text-grey-500 font-bold uppercase">
+                      <td colSpan={dynamicHeaders.length + 2} className="px-6 py-20 text-center text-grey-500 font-bold uppercase">
                         No matches found in database
                       </td>
                     </tr>
@@ -180,16 +171,6 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                       <React.Fragment key={record._id}>
                         <tr className={`border-b-2 border-grey-100 hover:bg-grey-50 cursor-pointer transition-colors ${expandedId === record._id ? 'bg-grey-50' : ''}`} onClick={() => toggleRow(record._id)}>
                           <td className="px-6 py-4 font-bold text-grey-400">{(index + 1).toString().padStart(2, '0')}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-wrap gap-1">
-                              {record.tags?.slice(0, 2).map(tag => (
-                                <span key={tag} className={`text-[8px] font-black uppercase px-2 py-0.5 border ${getTagColor(tag)} rounded-none`}>
-                                  {tag}
-                                </span>
-                              ))}
-                              {record.tags?.length > 2 && <span className="text-[8px] font-bold text-grey-400">+{record.tags.length - 2}</span>}
-                            </div>
-                          </td>
                           {dynamicHeaders.map(header => (
                             <td key={header} className="px-6 py-4 font-black uppercase tracking-tighter text-black">
                               {record.data[header] || '-'}
@@ -204,8 +185,8 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                         {/* Expanded Row */}
                         {expandedId === record._id && (
                           <tr className="bg-white">
-                            <td colSpan={dynamicHeaders.length + 3} className="p-6 border-b-4 border-black animate-in fade-in slide-in-from-top-2 duration-300">
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <td colSpan={dynamicHeaders.length + 2} className="p-6 border-b-4 border-black animate-in fade-in slide-in-from-top-2 duration-300">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-4">
                                   <h4 className="text-xs font-black uppercase tracking-widest text-grey-400 border-b border-grey-100 pb-2">Full Details</h4>
                                   <div className="grid grid-cols-2 gap-y-2 text-xs">
@@ -234,22 +215,6 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                                         <span className="font-black text-lg">₹{record.data.revenue}</span>
                                       </div>
                                     )}
-                                  </div>
-                                </div>
-                                <div className="space-y-4">
-                                  <h4 className="text-xs font-black uppercase tracking-widest text-grey-400 border-b border-grey-100 pb-2">Next Actions</h4>
-                                  <div className="space-y-2">
-                                    <Button size="sm" className="w-full justify-start text-[10px]" variant="outline">
-                                      <Bookmark className="w-3 h-3 mr-2" /> Bookmark for Research
-                                    </Button>
-                                    <Button size="sm" className="w-full justify-start text-[10px]">
-                                      <Edit2 className="w-3 h-3 mr-2" /> Log Outreach Activity
-                                    </Button>
-                                    <div className="p-3 bg-yellow-50 border-2 border-yellow-200 rounded-none">
-                                      <p className="text-[9px] font-bold text-yellow-800 uppercase leading-tight">
-                                        AI Recommendation: This brand has strong revenue but hasn&apos;t been contacted. High priority target.
-                                      </p>
-                                    </div>
                                   </div>
                                 </div>
                               </div>

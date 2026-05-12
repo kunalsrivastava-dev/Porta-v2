@@ -15,6 +15,8 @@ router.get("/requests", AdminController.getAllRequests);
 router.get("/requests/pending", AdminController.getPendingRequests);
 router.patch("/requests/:requestId/approve", AdminController.approveRequest);
 router.patch("/requests/:requestId/reject", AdminController.rejectRequest);
+router.post("/invite", AdminController.inviteUser);
+router.post("/revoke", AdminController.revokeAccess);
  
 // Monitoring (Admins & Interns)
 router.get("/monitoring/logs", authorize(["ADMIN"]), MonitoringController.getActivityLogs);

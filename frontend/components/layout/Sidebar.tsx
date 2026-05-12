@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Building2,
   Users,
-  Database,
   ClipboardList,
   Activity,
   LogOut,
@@ -56,7 +55,6 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
     { label: 'Brands', href: '/dashboard/brands', icon: <Building2 size={18} /> },
     { label: 'Influencers', href: '/dashboard/influencers', icon: <Sparkles size={18} /> },
-    { label: 'Leads', href: '/dashboard/data', icon: <Database size={18} /> },
     { label: 'Users', href: '/dashboard/users', icon: <Users size={18} /> },
     { label: 'Requests', href: '/dashboard/requests', icon: <ClipboardList size={18} />, badge: pendingCount > 0 ? pendingCount : null },
     { label: 'Monitoring', href: '/dashboard/monitoring', icon: <Activity size={18} /> },
@@ -74,7 +72,6 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     { label: 'Brands', href: '/dashboard/brands', icon: <Building2 size={18} /> },
     { label: 'Influencers', href: '/dashboard/influencers', icon: <Sparkles size={18} /> },
     { label: 'Upload Data', href: '/dashboard/upload', icon: <Upload size={18} /> },
-    { label: 'View Leads', href: '/dashboard/data', icon: <Database size={18} /> },
   ];
 
   const navItems = user?.role === 'ADMIN' ? adminNavItems

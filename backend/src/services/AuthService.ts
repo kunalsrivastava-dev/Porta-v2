@@ -12,8 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export class AuthService {
-  // Register or request access for intern
-  static async registerIntern(email: string, name: string, password: string) {
+  // Register a pre-approved user
+  static async registerApprovedUser(email: string, name: string, password: string) {
     // Validate inputs
     if (!validateEmail(email)) {
       throw new Error("Invalid email format");
@@ -37,7 +37,7 @@ export class AuthService {
 
     if (!accessRequest) {
       throw new Error(
-        "Account creation failed: This email address has not been pre-approved by an administrator. Please submit an access request first."
+        "Unauthorized Access: This email address has not been pre-approved by an administrator."
       );
     }
 
@@ -78,6 +78,57 @@ export class AuthService {
         email: user.email,
         role: user.role,
       },
+    };
+  }
+
+  // Verify email status for the multi-step auth flow
+  static async verifyEmailStatus(email: string) {
+    if (!validateEmail(email)) {
+      throw new Error("Invalid email format");
+    }
+
+    const normalizedEmail = email.toLowerCase();
+
+    // 1. Check if email is approved
+    const approval = await AccessRequest.findOne({
+      email: normalizedEmail,
+      status: "approved",
+    });
+
+    if (!approval) {
+      // Special check: if it's a super admin from the file
+      try {
+        const adminsPath = path.join(process.cwd(), "admins.txt");
+        if (fs.existsSync(adminsPath)) {
+          const adminsData = fs.readFileSync(adminsPath, "utf-8");
+          const adminLines = adminsData.split("\n").filter(l => l.trim() !== "");
+          for (const line of adminLines) {
+            const [adminEmail] = line.split(":");
+            if (adminEmail === normalizedEmail) {
+              // Super admin found in file
+              const user = await User.findOne({ email: normalizedEmail });
+              return {
+                approved: true,
+                registered: !!user,
+                role: "ADMIN"
+              };
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Admins file check error during verification", err);
+      }
+
+      return { approved: false, registered: false };
+    }
+
+    // 2. Check if already registered
+    const user = await User.findOne({ email: normalizedEmail });
+
+    return {
+      approved: true,
+      registered: !!user,
+      role: user?.role || approval.assignedRole || "INTERN"
     };
   }
 

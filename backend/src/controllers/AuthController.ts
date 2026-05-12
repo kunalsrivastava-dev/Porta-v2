@@ -5,7 +5,7 @@ import { AccessRequestService } from "../services/AccessRequestService.js";
 import { validateRequestBody } from "../utils/validators.js";
 
 export class AuthController {
-  // Register intern
+  // Register pre-approved user
   static async register(req: AuthRequest, res: Response) {
     try {
       const { email, name, password } = req.body;
@@ -18,7 +18,7 @@ export class AuthController {
         return res.status(400).json({ success: false, message: validation.error });
       }
 
-      const result = await AuthService.registerIntern(email, name, password);
+      const result = await AuthService.registerApprovedUser(email, name, password);
       res.cookie("token", result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -31,6 +31,32 @@ export class AuthController {
       return res.status(400).json({
         success: false,
         message: error.message || "Registration failed",
+      });
+    }
+  }
+
+  // Verify email for invite-only flow
+  static async verifyEmail(req: AuthRequest, res: Response) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: "Email is required",
+        });
+      }
+
+      const result = await AuthService.verifyEmailStatus(email);
+      
+      return res.json({
+        success: true,
+        ...result
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Verification failed",
       });
     }
   }

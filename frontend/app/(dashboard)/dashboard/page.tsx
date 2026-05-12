@@ -1,50 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { userAPI } from '@/lib/api/endpoints';
-import { Loader2, Users, UserCog, UserCheck, ShieldCheck, BarChart3 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
-interface Stats {
-  totalUsers: number;
-  adminCount: number;
-  dataEntryCount: number;
-  internCount: number;
-  activeUsers: number;
-}
 
-const StatCard = ({ title, value, sub, icon, inverted = false }: any) => (
-  <div className={`flex flex-col justify-between border-4 border-black p-4 ${inverted ? 'bg-black text-white' : 'bg-white text-black'} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-    <div className="flex items-center justify-between mb-2">
-      <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{title}</span>
-      <div className={`p-1.5 border-2 ${inverted ? 'border-white' : 'border-black'}`}>
-        {icon}
-      </div>
-    </div>
-    <div className="text-4xl font-black tracking-tighter">{value}</div>
-    {sub && <p className="text-[10px] uppercase font-bold opacity-60 mt-1">{sub}</p>}
-  </div>
-);
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) router.push('/login');
   }, [isAuthenticated, authLoading, router]);
-
-  useEffect(() => {
-    if (!user || user.role !== 'ADMIN') { setIsLoading(false); return; }
-    userAPI.getDashboardStats()
-      .then(r => setStats(r.data.stats))
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
-  }, [user]);
 
   if (authLoading) return (
     <DashboardLayout>
@@ -71,22 +41,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Admin Stats */}
-        {user?.role === 'ADMIN' && (
-          isLoading ? (
-            <div className="flex items-center gap-3 text-sm font-bold uppercase">
-              <Loader2 className="animate-spin w-4 h-4" /> Loading stats...
-            </div>
-          ) : stats ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 shrink-0">
-              <StatCard title="Total Users" value={stats.totalUsers} sub="Registered" icon={<Users size={14} />} inverted />
-              <StatCard title="Admins" value={stats.adminCount} sub="Administrators" icon={<ShieldCheck size={14} />} />
-              <StatCard title="Data Entry" value={stats.dataEntryCount} sub="Operators" icon={<UserCog size={14} />} />
-              <StatCard title="Interns" value={stats.internCount} sub="Team members" icon={<UserCheck size={14} />} />
-              <StatCard title="Active" value={stats.activeUsers} sub="This period" icon={<BarChart3 size={14} />} />
-            </div>
-          ) : null
-        )}
+        {/* Admin Section Removed Stats */}
 
         {/* Quick Actions Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 shrink-0">
@@ -97,7 +52,6 @@ export default function DashboardPage() {
               <QuickAction href="/dashboard/users" label="Users" desc="Manage team access" />
               <QuickAction href="/dashboard/requests" label="Requests" desc="Pending access approvals" />
               <QuickAction href="/dashboard/monitoring" label="Monitoring" desc="Activity logs & audit" />
-              <QuickAction href="/dashboard/data" label="Leads" desc="Lead management" />
             </>
           )}
           {user?.role === 'INTERN' && (
@@ -112,7 +66,6 @@ export default function DashboardPage() {
               <QuickAction href="/dashboard/brands" label="Brands" desc="Brand intelligence ecosystem" />
               <QuickAction href="/dashboard/influencers" label="Influencers" desc="Influencer discovery database" />
               <QuickAction href="/dashboard/upload" label="Upload Data" desc="Import CSV files" />
-              <QuickAction href="/dashboard/data" label="Leads" desc="Manage outreach pipeline" />
             </>
           )}
         </div>
