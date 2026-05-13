@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Building2,
   Users,
-  ClipboardList,
   LogOut,
   Menu,
   X,
@@ -31,31 +30,12 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [pendingCount, setPendingCount] = useState(0);
-
-  useEffect(() => {
-    if (user?.role === 'ADMIN') {
-      const fetchRequests = async () => {
-        try {
-          const res = await adminAPI.getPendingRequests(1, 1);
-          setPendingCount(res.data.total);
-        } catch (err) {
-          console.error('Failed to fetch pending requests count', err);
-        }
-      };
-      fetchRequests();
-      // Poll every 2 minutes for new requests
-      const interval = setInterval(fetchRequests, 120000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
 
   const adminNavItems = [
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
     { label: 'Brands', href: '/dashboard/brands', icon: <Building2 size={18} /> },
     { label: 'Influencers', href: '/dashboard/influencers', icon: <Sparkles size={18} /> },
     { label: 'Users', href: '/dashboard/users', icon: <Users size={18} /> },
-    { label: 'Requests', href: '/dashboard/requests', icon: <ClipboardList size={18} />, badge: pendingCount > 0 ? pendingCount : null },
   ];
 
   const internNavItems = [
