@@ -66,6 +66,10 @@ export class DataController {
               const normalizedData = IntelligenceEngine.normalize(transformedData, type);
               const tags = IntelligenceEngine.generateTags(normalizedData, type);
 
+              if (!normalizedData.outreach_status) {
+                normalizedData.outreach_status = 'NEW';
+              }
+
               return {
                 uploadedBy: new mongoose.Types.ObjectId(req.user!.userId),
                 data: normalizedData,
@@ -127,6 +131,10 @@ export class DataController {
           success: false,
           message: "Type and data are required",
         });
+      }
+
+      if (!data.outreach_status) {
+        data.outreach_status = 'NEW';
       }
 
       const record = await DataRecord.create({

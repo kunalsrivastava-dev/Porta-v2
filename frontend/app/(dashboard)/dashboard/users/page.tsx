@@ -16,7 +16,7 @@ interface Invitation { _id: string; email: string; assignedRole: string; status:
 
 export default function UsersPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
   
   const [users, setUsers] = useState<User[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
@@ -31,8 +31,8 @@ export default function UsersPage() {
   const [isInviting, setIsInviting] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'ADMIN') router.push('/dashboard');
-  }, [isAuthenticated, user, router]);
+    if (!authLoading && user?.role !== 'ADMIN') router.push('/dashboard');
+  }, [authLoading, user, router]);
 
   const fetchData = async () => {
     setIsLoading(true);

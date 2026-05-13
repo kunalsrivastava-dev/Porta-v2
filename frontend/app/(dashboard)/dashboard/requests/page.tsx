@@ -14,15 +14,15 @@ interface AccessRequest { _id: string; email: string; status: string; requestedA
 
 export default function RequestsPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
   const [requests, setRequests] = useState<AccessRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [roles, setRoles] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'ADMIN') router.push('/dashboard');
-  }, [isAuthenticated, user, router]);
+    if (!authLoading && user?.role !== 'ADMIN') router.push('/dashboard');
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') return;

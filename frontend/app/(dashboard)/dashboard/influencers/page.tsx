@@ -10,10 +10,6 @@ export default function InfluencersPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
 
-  useEffect(() => {
-    if (!isAuthenticated) router.push('/login');
-  }, [isAuthenticated, router]);
-
   return (
     <DashboardLayout>
       <div className="flex flex-col h-full gap-4">

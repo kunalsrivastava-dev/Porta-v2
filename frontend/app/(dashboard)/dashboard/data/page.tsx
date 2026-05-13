@@ -8,13 +8,13 @@ import { DataTable } from '@/components/leads/DataTable';
 
 export default function LeadsPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated || (user?.role !== 'ADMIN' && user?.role !== 'DATA_ENTRY')) {
+    if (!authLoading && (user?.role !== 'ADMIN' && user?.role !== 'DATA_ENTRY')) {
       router.push('/dashboard');
     }
-  }, [isAuthenticated, user, router]);
+  }, [authLoading, user, router]);
 
   return (
     <DashboardLayout>

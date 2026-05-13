@@ -10,13 +10,7 @@ import { CSVUpload } from '@/components/leads/CSVUpload';
 export default function DataEntryUploadPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
-  const [activeType, setActiveType] = useState<'LEAD' | 'BRAND' | 'INFLUENCER'>('LEAD');
-
-  useEffect(() => {
-    if (!isAuthenticated || (user?.role !== 'DATA_ENTRY' && user?.role !== 'ADMIN')) {
-      router.push('/dashboard');
-    }
-  }, [isAuthenticated, user, router]);
+  const [activeType, setActiveType] = useState<'BRAND' | 'INFLUENCER'>('BRAND');
 
   return (
     <DashboardLayout>
@@ -27,7 +21,7 @@ export default function DataEntryUploadPage() {
         </div>
 
         <div className="flex gap-2 p-1 bg-grey-100 rounded-lg w-fit">
-          {(['LEAD', 'BRAND', 'INFLUENCER'] as const).map((type) => (
+          {(['BRAND', 'INFLUENCER'] as const).map((type) => (
             <button
               key={type}
               onClick={() => setActiveType(type)}

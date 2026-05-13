@@ -8,13 +8,13 @@ import { DataTable } from '@/components/leads/DataTable';
 
 export default function InternWorkPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated || (user?.role !== 'INTERN' && user?.role !== 'ADMIN')) {
+    if (!authLoading && (user?.role !== 'INTERN' && user?.role !== 'ADMIN')) {
       router.push('/dashboard');
     }
-  }, [isAuthenticated, user, router]);
+  }, [authLoading, user, router]);
 
   return (
     <DashboardLayout>

@@ -8,13 +8,13 @@ import { Card, CardHeader, CardBody } from '@/components/ui/Card';
 
 export default function ActivityLogsPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'ADMIN') {
+    if (!authLoading && user?.role !== 'ADMIN') {
       router.push('/dashboard');
     }
-  }, [isAuthenticated, user, router]);
+  }, [authLoading, user, router]);
 
   return (
     <DashboardLayout>

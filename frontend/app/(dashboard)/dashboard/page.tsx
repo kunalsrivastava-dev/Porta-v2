@@ -12,10 +12,6 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
 
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) router.push('/login');
-  }, [isAuthenticated, authLoading, router]);
-
   if (authLoading) return (
     <DashboardLayout>
       <div className="flex items-center justify-center h-full">
