@@ -4,9 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Loader2, Trash2, Plus, ExternalLink, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { dataAPI } from '@/lib/api/endpoints';
-import { useAuthStore } from '@/store/authStore';
 import { RecordModal } from './RecordModal';
 import { FilterSidebar } from './FilterSidebar';
 
@@ -35,8 +33,6 @@ export const DataTable = ({ type, title }: DataTableProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<DataRecord | undefined>();
   const [showFilters, setShowFilters] = useState(true);
-  
-  const { user } = useAuthStore();
 
   const fetchRecords = async () => {
     setLoading(true);
