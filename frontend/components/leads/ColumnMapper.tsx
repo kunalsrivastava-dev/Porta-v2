@@ -21,8 +21,9 @@ const BRAND_FIELDS = [
 ];
 
 const INFLUENCER_FIELDS = [
-  'channel_name', 'has_email', 'has_phone', 'emails', 'phones', 
-  'category', 'subscribers', 'total_views', 'total_videos'
+  'channel_name', 'channel_id', 'channel_url', 'category', 'keyword', 
+  'subscribers', 'subscribers_fmt', 'total_views', 'total_videos', 
+  'emails', 'phone_numbers', 'has_email', 'has_phone', 'country'
 ];
 
 export const ColumnMapper = ({ headers, type, onConfirm, onCancel }: ColumnMapperProps) => {

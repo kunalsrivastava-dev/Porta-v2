@@ -66,9 +66,9 @@ export const RecordModal = ({ isOpen, onClose, type, record, onSuccess }: Record
   ];
 
   const influencerFields = [
-    'channel_name', 'category', 'subscribers', 'emails', 'phones',
-    'instagram_handle', 'instagram_video_link', 'youtube_handle', 'youtube_video_link', 
-    'x_handle', 'x_page_link', 'city', 'extra_points', 'feedback', 'script_for_email', 'outreach_status'
+    'channel_name', 'channel_id', 'channel_url', 'category', 'keyword', 
+    'subscribers', 'subscribers_fmt', 'total_views', 'total_videos', 
+    'emails', 'phone_numbers', 'has_email', 'has_phone', 'country', 'outreach_status'
   ];
 
   const leadFields = ['name', 'email', 'phone', 'company', 'outreach_status'];

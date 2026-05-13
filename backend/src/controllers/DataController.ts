@@ -52,10 +52,13 @@ export class DataController {
                 // Apply mapping: CSV Header -> System Field
                 Object.entries(row).forEach(([header, value]) => {
                   const targetField = mapping[header];
-                  if (targetField && targetField !== "") {
+                  if (targetField === "") {
+                    // Skip this column explicitly
+                  } else if (targetField === "custom") {
+                    // Custom columns are stored as strings
+                    transformedData[header.toLowerCase().replace(/\s+/g, '_')] = String(value);
+                  } else if (targetField) {
                     transformedData[targetField] = value;
-                  } else {
-                    transformedData[header.toLowerCase().replace(/\s+/g, '_')] = value;
                   }
                 });
               } else {

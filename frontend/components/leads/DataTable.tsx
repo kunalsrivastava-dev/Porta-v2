@@ -120,9 +120,9 @@ export const DataTable = ({ type, title }: DataTableProps) => {
   ];
 
   const influencerHeaders = [
-    'channel_name', 'category', 'subscribers', 'emails', 'phones',
-    'instagram_handle', 'instagram_video_link', 'youtube_handle', 'youtube_video_link', 
-    'x_handle', 'x_page_link', 'city', 'extra_points', 'feedback', 'script_for_email'
+    'channel_name', 'channel_id', 'channel_url', 'category', 'keyword', 
+    'subscribers', 'subscribers_fmt', 'total_views', 'total_videos', 
+    'emails', 'phone_numbers', 'has_email', 'has_phone', 'country'
   ];
 
   const leadHeaders = ['name', 'email', 'phone', 'company'];
@@ -183,8 +183,8 @@ export const DataTable = ({ type, title }: DataTableProps) => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-black text-[10px] uppercase font-black text-white tracking-widest">
-                    <th className="px-6 py-4 w-10 text-center">
+                  <tr className="bg-black text-[10px] uppercase font-black text-white tracking-widest sticky top-0 z-30">
+                    <th className="px-2 py-4 w-[60px] min-w-[60px] max-w-[60px] text-center sticky left-0 z-40 bg-inherit">
                       <input 
                         type="checkbox" 
                         className="w-4 h-4 accent-white cursor-pointer" 
@@ -192,9 +192,11 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                         onChange={toggleSelectAll} 
                       />
                     </th>
-                    <th className="px-6 py-4 w-10 text-center">#</th>
-                    {dynamicHeaders.map(header => (
-                      <th key={header} className="px-6 py-4 whitespace-nowrap">{header.replace(/_/g, ' ')}</th>
+                    <th className="px-2 py-4 w-[60px] min-w-[60px] max-w-[60px] text-center sticky left-[60px] z-40 bg-inherit">#</th>
+                    {dynamicHeaders.map((header, i) => (
+                      <th key={header} className={`px-6 py-4 whitespace-nowrap ${i === 0 ? 'sticky left-[120px] z-40 bg-inherit shadow-[4px_0_4px_-4px_rgba(255,255,255,0.5)]' : ''}`}>
+                        {header.replace(/_/g, ' ')}
+                      </th>
                     ))}
                     <th className="px-6 py-4 text-right whitespace-nowrap min-w-[160px]">Outreach Status</th>
                   </tr>
@@ -216,8 +218,8 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                   ) : (
                     records.map((record, index) => (
                       <React.Fragment key={record._id}>
-                        <tr className={`border-b-2 border-grey-100 hover:bg-grey-50 cursor-pointer transition-colors ${expandedId === record._id ? 'bg-grey-50' : ''}`} onClick={() => toggleRow(record._id)}>
-                          <td className="px-6 py-4 text-center" onClick={(e) => e.stopPropagation()}>
+                        <tr className={`border-b-2 border-grey-100 cursor-pointer transition-colors ${expandedId === record._id ? 'bg-grey-50' : 'bg-white hover:bg-grey-50'}`} onClick={() => toggleRow(record._id)}>
+                          <td className="px-2 py-4 w-[60px] min-w-[60px] max-w-[60px] text-center sticky left-0 z-20 bg-inherit" onClick={(e) => e.stopPropagation()}>
                             <input 
                               type="checkbox" 
                               className="w-4 h-4 accent-black cursor-pointer" 
@@ -225,9 +227,9 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                               onChange={(e) => { e.stopPropagation(); toggleSelectRow(record._id, e as any); }}
                             />
                           </td>
-                          <td className="px-6 py-4 font-bold text-grey-400">{(index + 1).toString().padStart(2, '0')}</td>
-                          {dynamicHeaders.map(header => (
-                            <td key={header} className="px-6 py-4 font-black uppercase tracking-tighter text-black whitespace-nowrap max-w-[200px] truncate" title={String(record.data[header] || '-')}>
+                          <td className="px-2 py-4 w-[60px] min-w-[60px] max-w-[60px] font-bold text-grey-400 text-center sticky left-[60px] z-20 bg-inherit">{(index + 1).toString().padStart(2, '0')}</td>
+                          {dynamicHeaders.map((header, i) => (
+                            <td key={header} className={`px-6 py-4 font-black uppercase tracking-tighter text-black whitespace-nowrap max-w-[200px] truncate ${i === 0 ? 'sticky left-[120px] z-20 bg-inherit shadow-[4px_0_4px_-4px_rgba(0,0,0,0.1)]' : ''}`} title={String(record.data[header] || '-')}>
                               {record.data[header] || '-'}
                             </td>
                           ))}
