@@ -49,38 +49,69 @@ export const RecordModal = ({ isOpen, onClose, type, record, onSuccess }: Record
 
   if (!isOpen) return null;
 
-  const fields = type === 'BRAND' ? [
+  const OUTREACH_STATUSES = [
+    'NEW', 'CONTACTED', 'ATTEMPTED_CONTACT', 'FOLLOW_UP_PENDING', 'REPLIED', 
+    'INTERESTED', 'QUALIFIED', 'UNQUALIFIED', 'NEGOTIATION', 'PROPOSAL_SENT', 
+    'DEMO_SCHEDULED', 'DEMO_COMPLETED', 'ONBOARDING', 'CLOSED_WON', 'CLOSED_LOST', 
+    'NO_RESPONSE', 'INVALID_CONTACT', 'BLOCKED', 'DO_NOT_CONTACT', 'FUTURE_POTENTIAL'
+  ];
+
+  const brandFields = [
     'brand_name', 'category', 'founded_year', 'brand_focus', 'founder', 
     'marketing_head', 'marketing_email', 'sales_head', 'sales_email', 
-    'city', 'employees', 'revenue'
-  ] : type === 'INFLUENCER' ? [
-    'channel_name', 'emails', 'phones', 'category', 'subscribers'
-  ] : ['name', 'email', 'phone', 'company'];
+    'content_marketing_head', 'content_marketing_head_email', 'company_phone', 'linkedin',
+    'revenue_cr', 'revenue_year', 'last_funding_amount', 'last_funding_round_data', 'last_funding_date',
+    'influencer_marketing_outreach', 'existing_tool', 'city', 'extra_points', 'main_geography_outreach',
+    'employees', 'main_influencer_platform', 'events_participated', 'feedback', 'script_for_email', 'business_case_study', 'outreach_status'
+  ];
+
+  const influencerFields = [
+    'channel_name', 'category', 'subscribers', 'emails', 'phones',
+    'instagram_handle', 'instagram_video_link', 'youtube_handle', 'youtube_video_link', 
+    'x_handle', 'x_page_link', 'city', 'extra_points', 'feedback', 'script_for_email', 'outreach_status'
+  ];
+
+  const leadFields = ['name', 'email', 'phone', 'company', 'outreach_status'];
+
+  const fields = type === 'BRAND' ? brandFields : type === 'INFLUENCER' ? influencerFields : leadFields;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-2xl animate-in zoom-in duration-200">
-        <div className="flex items-center justify-between p-4 border-b-4 border-black bg-black text-white">
+      <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-4xl my-8 animate-in zoom-in duration-200 h-fit max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b-4 border-black bg-black text-white shrink-0">
           <h2 className="text-xl font-bold uppercase tracking-tighter">
             {record ? `View/Edit ${type}` : `Add New ${type}`}
           </h2>
-          <button onClick={onClose} className="hover:rotate-90 transition-transform">
+          <button type="button" onClick={onClose} className="hover:rotate-90 transition-transform">
             <X className="w-6 h-6" />
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {fields.map(field => (
               <div key={field}>
-                <label className="block text-xs font-bold uppercase text-grey-600 mb-1">{field.replace('_', ' ')}</label>
-                <input
-                  type="text"
-                  className="w-full border-2 border-grey-200 px-3 py-2 outline-none focus:border-black font-medium"
-                  value={formData[field] || ''}
-                  onChange={(e) => handleFieldChange(field, e.target.value)}
-                  placeholder={`Enter ${field}...`}
-                />
+                <label className="block text-xs font-bold uppercase text-grey-600 mb-1">{field.replace(/_/g, ' ')}</label>
+                {field === 'outreach_status' ? (
+                  <select
+                    className="w-full border-2 border-grey-200 px-3 py-2 outline-none focus:border-black font-medium bg-white"
+                    value={formData[field] || 'NEW'}
+                    onChange={(e) => handleFieldChange(field, e.target.value)}
+                  >
+                    <option value="" disabled>Select Status</option>
+                    {OUTREACH_STATUSES.map(status => (
+                      <option key={status} value={status}>{status.replace(/_/g, ' ')}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    className="w-full border-2 border-grey-200 px-3 py-2 outline-none focus:border-black font-medium"
+                    value={formData[field] || ''}
+                    onChange={(e) => handleFieldChange(field, e.target.value)}
+                    placeholder={`Enter ${field.replace(/_/g, ' ')}...`}
+                  />
+                )}
               </div>
             ))}
           </div>

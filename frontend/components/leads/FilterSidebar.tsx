@@ -10,7 +10,7 @@ interface FilterSidebarProps {
 }
 
 export const FilterSidebar = ({ type, onFilterChange, activeFilters }: FilterSidebarProps) => {
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(['brand', 'growth', 'influencer', 'contact']);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(['brand', 'growth', 'influencer', 'contact', 'outreach']);
 
   const toggleGroup = (group: string) => {
     setExpandedGroups(prev => 
@@ -56,6 +56,13 @@ export const FilterSidebar = ({ type, onFilterChange, activeFilters }: FilterSid
     </label>
   );
 
+  const OUTREACH_STATUSES = [
+    'NEW', 'CONTACTED', 'ATTEMPTED_CONTACT', 'FOLLOW_UP_PENDING', 'REPLIED', 
+    'INTERESTED', 'QUALIFIED', 'UNQUALIFIED', 'NEGOTIATION', 'PROPOSAL_SENT', 
+    'DEMO_SCHEDULED', 'DEMO_COMPLETED', 'ONBOARDING', 'CLOSED_WON', 'CLOSED_LOST', 
+    'NO_RESPONSE', 'INVALID_CONTACT', 'BLOCKED', 'DO_NOT_CONTACT', 'FUTURE_POTENTIAL'
+  ];
+
   return (
     <div className="w-64 bg-white border-r border-grey-200 h-[calc(100vh-64px)] sticky top-16 overflow-y-auto hidden lg:block">
       <div className="p-4 border-b border-grey-200 flex items-center justify-between bg-grey-50">
@@ -72,6 +79,12 @@ export const FilterSidebar = ({ type, onFilterChange, activeFilters }: FilterSid
           </button>
         )}
       </div>
+
+      <FilterGroup id="outreach" title="Outreach Status">
+        {OUTREACH_STATUSES.map(status => (
+          <CheckboxFilter key={status} category="outreach_status" label={status.replace(/_/g, ' ')} value={status} />
+        ))}
+      </FilterGroup>
 
       <FilterGroup id="brand" title="Brand & Type">
         <CheckboxFilter category="tags" label="High Opportunity" value="High Opportunity" />

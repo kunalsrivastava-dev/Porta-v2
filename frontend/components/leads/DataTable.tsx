@@ -31,7 +31,7 @@ export const DataTable = ({ type, title }: DataTableProps) => {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<any>({});
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [selectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<DataRecord | undefined>();
   const [showFilters, setShowFilters] = useState(true);
@@ -66,7 +66,29 @@ export const DataTable = ({ type, title }: DataTableProps) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
+  const toggleSelectAll = () => {
+    if (selectedIds.length === records.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(records.map(r => r._id));
+    }
+  };
 
+  const toggleSelectRow = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} records?`)) return;
+    try {
+      await dataAPI.bulkDelete(selectedIds);
+      setSelectedIds([]);
+      fetchRecords();
+    } catch (error) {
+      console.error('Failed to delete records', error);
+    }
+  };
 
   const handleExport = () => {
     if (records.length === 0) return;
@@ -114,7 +136,7 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                   <Filter className="w-4 h-4 mr-1" /> Filters
                 </Button>
                 {selectedIds.length > 0 && user?.role === 'ADMIN' && (
-                  <Button size="sm" variant="danger" onClick={() => {}}>
+                  <Button size="sm" variant="danger" onClick={handleDelete}>
                     <Trash2 className="w-4 h-4 mr-1" /> Delete ({selectedIds.length})
                   </Button>
                 )}
@@ -145,6 +167,14 @@ export const DataTable = ({ type, title }: DataTableProps) => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-black text-[10px] uppercase font-black text-white tracking-widest">
+                    <th className="px-6 py-4 w-10 text-center">
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 accent-white cursor-pointer" 
+                        checked={records.length > 0 && selectedIds.length === records.length}
+                        onChange={toggleSelectAll} 
+                      />
+                    </th>
                     <th className="px-6 py-4 w-10 text-center">#</th>
                     {dynamicHeaders.map(header => (
                       <th key={header} className="px-6 py-4">{header.replace('_', ' ')}</th>
@@ -170,6 +200,14 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                     records.map((record, index) => (
                       <React.Fragment key={record._id}>
                         <tr className={`border-b-2 border-grey-100 hover:bg-grey-50 cursor-pointer transition-colors ${expandedId === record._id ? 'bg-grey-50' : ''}`} onClick={() => toggleRow(record._id)}>
+                          <td className="px-6 py-4 text-center" onClick={(e) => e.stopPropagation()}>
+                            <input 
+                              type="checkbox" 
+                              className="w-4 h-4 accent-black cursor-pointer" 
+                              checked={selectedIds.includes(record._id)}
+                              onChange={(e) => { e.stopPropagation(); toggleSelectRow(record._id, e as any); }}
+                            />
+                          </td>
                           <td className="px-6 py-4 font-bold text-grey-400">{(index + 1).toString().padStart(2, '0')}</td>
                           {dynamicHeaders.map(header => (
                             <td key={header} className="px-6 py-4 font-black uppercase tracking-tighter text-black">
@@ -188,7 +226,12 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                             <td colSpan={dynamicHeaders.length + 2} className="p-6 border-b-4 border-black animate-in fade-in slide-in-from-top-2 duration-300">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-4">
-                                  <h4 className="text-xs font-black uppercase tracking-widest text-grey-400 border-b border-grey-100 pb-2">Full Details</h4>
+                                  <div className="flex items-center justify-between border-b border-grey-100 pb-2">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-grey-400">Full Details</h4>
+                                    <Button size="sm" variant="outline" onClick={() => { setSelectedRecord(record); setIsModalOpen(true); }}>
+                                      Edit Record
+                                    </Button>
+                                  </div>
                                   <div className="grid grid-cols-2 gap-y-2 text-xs">
                                     {Object.entries(record.data).slice(0, 10).map(([k, v]) => (
                                       <React.Fragment key={k}>
