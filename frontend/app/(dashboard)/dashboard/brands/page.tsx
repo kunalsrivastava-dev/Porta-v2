@@ -1,14 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
-import { useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DataTable } from '@/components/leads/DataTable';
 
 export default function BrandsPage() {
-  const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
 
   return (
     <DashboardLayout>

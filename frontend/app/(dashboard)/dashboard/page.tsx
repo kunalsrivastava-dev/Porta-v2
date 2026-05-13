@@ -1,15 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Loader2 } from 'lucide-react';
 
 
 
 export default function DashboardPage() {
-  const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
 
   if (authLoading) return (

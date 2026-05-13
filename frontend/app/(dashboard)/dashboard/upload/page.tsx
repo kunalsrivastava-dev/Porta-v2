@@ -1,15 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardHeader, CardBody } from '@/components/ui/Card';
 import { CSVUpload } from '@/components/leads/CSVUpload';
 
 export default function DataEntryUploadPage() {
-  const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
   const [activeType, setActiveType] = useState<'BRAND' | 'INFLUENCER'>('BRAND');
 
   return (
