@@ -163,7 +163,7 @@ export class DataController {
    */
   static async getData(req: AuthRequest, res: Response) {
     try {
-      const { type, status, tags, assignedTo, search } = req.query;
+      const { type, status, tags, assignedTo, search, outreach_status } = req.query;
       const query: any = {};
 
       if (type) query.type = type;
@@ -176,6 +176,10 @@ export class DataController {
         query.tags = { $all: tagsArray }; // Must have all selected tags
       }
       if (assignedTo) query.assignedTo = assignedTo;
+      if (outreach_status) {
+        const outreachArray = String(outreach_status).split(',');
+        query["data.outreach_status"] = { $in: outreachArray };
+      }
 
       // MongoDB full text search or regex on data fields is complex
       // For now, we'll fetch and filter if search is present, 

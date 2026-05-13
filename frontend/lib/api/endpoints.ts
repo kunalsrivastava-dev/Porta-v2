@@ -84,7 +84,8 @@ export const dataAPI = {
     status?: string, 
     assignedTo?: string, 
     search?: string, 
-    tags?: string 
+    tags?: string,
+    outreach_status?: string
   }) => api.get('/data', { params }),
 
   getStats: (type?: string) =>

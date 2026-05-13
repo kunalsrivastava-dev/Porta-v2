@@ -20,7 +20,7 @@ router.post(
 // Create manual record
 router.post(
   "/",
-  authorize(["ADMIN", "DATA_ENTRY"]),
+  authorize(["ADMIN", "DATA_ENTRY", "INTERN"]),
   DataController.createRecord
 );
 
@@ -38,12 +38,12 @@ router.patch(
 );
 
 // Delete data
-router.delete("/:id", authorize(["ADMIN"]), DataController.deleteData);
+router.delete("/:id", authorize(["ADMIN", "DATA_ENTRY", "INTERN"]), DataController.deleteData);
 
 // Bulk delete data
 router.post(
   "/bulk-delete",
-  authorize(["ADMIN"]),
+  authorize(["ADMIN", "DATA_ENTRY", "INTERN"]),
   DataController.bulkDelete
 );
 

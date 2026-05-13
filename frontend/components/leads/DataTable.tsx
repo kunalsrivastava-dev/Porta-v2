@@ -46,6 +46,7 @@ export const DataTable = ({ type, title }: DataTableProps) => {
         search,
         status: filters.status?.join(','),
         tags: filters.tags?.join(','),
+        outreach_status: filters.outreach_status?.join(','),
       });
       setRecords(response.data.data);
     } catch (error) {
@@ -106,11 +107,31 @@ export const DataTable = ({ type, title }: DataTableProps) => {
     a.click();
   };
 
-  const dynamicHeaders = type === 'BRAND' 
-    ? ['brand_name', 'category', 'revenue', 'city'] 
-    : type === 'INFLUENCER' 
-      ? ['channel_name', 'category', 'subscribers', 'total_views']
-      : ['name', 'email', 'company'];
+  const OUTREACH_STATUSES = [
+    'NEW', 'CONTACTED', 'ATTEMPTED_CONTACT', 'FOLLOW_UP_PENDING', 'REPLIED', 
+    'INTERESTED', 'QUALIFIED', 'UNQUALIFIED', 'NEGOTIATION', 'PROPOSAL_SENT', 
+    'DEMO_SCHEDULED', 'DEMO_COMPLETED', 'ONBOARDING', 'CLOSED_WON', 'CLOSED_LOST', 
+    'NO_RESPONSE', 'INVALID_CONTACT', 'BLOCKED', 'DO_NOT_CONTACT', 'FUTURE_POTENTIAL'
+  ];
+
+  const brandHeaders = [
+    'brand_name', 'category', 'founded_year', 'brand_focus', 'founder', 
+    'marketing_head', 'marketing_email', 'sales_head', 'sales_email', 
+    'content_marketing_head', 'content_marketing_head_email', 'company_phone', 'linkedin',
+    'revenue_cr', 'revenue_year', 'last_funding_amount', 'last_funding_round_data', 'last_funding_date',
+    'influencer_marketing_outreach', 'existing_tool', 'city', 'extra_points', 'main_geography_outreach',
+    'employees', 'main_influencer_platform', 'events_participated', 'feedback', 'script_for_email', 'business_case_study'
+  ];
+
+  const influencerHeaders = [
+    'channel_name', 'category', 'subscribers', 'emails', 'phones',
+    'instagram_handle', 'instagram_video_link', 'youtube_handle', 'youtube_video_link', 
+    'x_handle', 'x_page_link', 'city', 'extra_points', 'feedback', 'script_for_email'
+  ];
+
+  const leadHeaders = ['name', 'email', 'phone', 'company'];
+
+  const dynamicHeaders = type === 'BRAND' ? brandHeaders : type === 'INFLUENCER' ? influencerHeaders : leadHeaders;
 
   return (
     <div className="flex flex-col gap-6">
@@ -135,7 +156,7 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                 <Button size="sm" variant="outline" onClick={() => setShowFilters(!showFilters)}>
                   <Filter className="w-4 h-4 mr-1" /> Filters
                 </Button>
-                {selectedIds.length > 0 && user?.role === 'ADMIN' && (
+                {selectedIds.length > 0 && (
                   <Button size="sm" variant="danger" onClick={handleDelete}>
                     <Trash2 className="w-4 h-4 mr-1" /> Delete ({selectedIds.length})
                   </Button>
@@ -177,9 +198,9 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                     </th>
                     <th className="px-6 py-4 w-10 text-center">#</th>
                     {dynamicHeaders.map(header => (
-                      <th key={header} className="px-6 py-4">{header.replace('_', ' ')}</th>
+                      <th key={header} className="px-6 py-4 whitespace-nowrap">{header.replace(/_/g, ' ')}</th>
                     ))}
-                    <th className="px-6 py-4 text-right">Outreach</th>
+                    <th className="px-6 py-4 text-right whitespace-nowrap min-w-[160px]">Outreach Status</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
@@ -210,14 +231,27 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                           </td>
                           <td className="px-6 py-4 font-bold text-grey-400">{(index + 1).toString().padStart(2, '0')}</td>
                           {dynamicHeaders.map(header => (
-                            <td key={header} className="px-6 py-4 font-black uppercase tracking-tighter text-black">
+                            <td key={header} className="px-6 py-4 font-black uppercase tracking-tighter text-black whitespace-nowrap max-w-[200px] truncate" title={String(record.data[header] || '-')}>
                               {record.data[header] || '-'}
                             </td>
                           ))}
-                          <td className="px-6 py-4 text-right">
-                            <Badge variant={record.status === 'completed' ? 'success' : record.status === 'in_progress' ? 'warning' : 'default'}>
-                              {record.status}
-                            </Badge>
+                          <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                            <select
+                              className="border-2 border-grey-200 px-2 py-1 outline-none focus:border-black font-medium bg-white text-[10px] uppercase w-full cursor-pointer hover:border-black"
+                              value={record.data.outreach_status || 'NEW'}
+                              onChange={async (e) => {
+                                const newStatus = e.target.value;
+                                try {
+                                  await dataAPI.updateData(record._id, { data: { ...record.data, outreach_status: newStatus } });
+                                  fetchRecords();
+                                } catch (err) {
+                                  console.error('Update failed', err);
+                                }
+                              }}
+                            >
+                              <option value="" disabled>Status</option>
+                              {OUTREACH_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
+                            </select>
                           </td>
                         </tr>
                         {/* Expanded Row */}
