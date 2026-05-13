@@ -17,7 +17,7 @@ import {
   CheckSquare,
   Sparkles
 } from 'lucide-react';
-import { adminAPI } from '@/lib/api/endpoints';
+
 
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
