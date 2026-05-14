@@ -34,30 +34,45 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Admin Section Removed Stats */}
+        {/* Access Overview */}
+        {user?.permissions && (
+          <div className="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] shrink-0">
+            <h2 className="text-xs font-black uppercase tracking-widest mb-3 border-b-2 border-black pb-2">Your Access Capabilities</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-grey-500 mb-2">Influencer Data</p>
+                <div className="flex gap-2">
+                  <span className={`px-2 py-1 text-[9px] font-black uppercase ${user.permissions.influencer?.read ? 'bg-black text-white' : 'border-2 border-black text-black'}`}>Read: {user.permissions.influencer?.read ? 'YES' : 'NO'}</span>
+                  <span className={`px-2 py-1 text-[9px] font-black uppercase ${user.permissions.influencer?.write ? 'bg-black text-white' : 'border-2 border-black text-black'}`}>Write: {user.permissions.influencer?.write ? 'YES' : 'NO'}</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-grey-500 mb-2">Brands/BDE Data</p>
+                <div className="flex gap-2">
+                  <span className={`px-2 py-1 text-[9px] font-black uppercase ${user.permissions.bde?.read ? 'bg-black text-white' : 'border-2 border-black text-black'}`}>Read: {user.permissions.bde?.read ? 'YES' : 'NO'}</span>
+                  <span className={`px-2 py-1 text-[9px] font-black uppercase ${user.permissions.bde?.write ? 'bg-black text-white' : 'border-2 border-black text-black'}`}>Write: {user.permissions.bde?.write ? 'YES' : 'NO'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 shrink-0">
+          {(user?.role === 'ADMIN' || user?.permissions?.bde?.read) && (
+            <QuickAction href="/dashboard/brands" label="Brands" desc="Explore brand intelligence" />
+          )}
+          {(user?.role === 'ADMIN' || user?.permissions?.influencer?.read) && (
+            <QuickAction href="/dashboard/influencers" label="Influencers" desc="Influencer discovery" />
+          )}
           {user?.role === 'ADMIN' && (
-            <>
-              <QuickAction href="/dashboard/brands" label="Brands" desc="Manage brand intelligence" />
-              <QuickAction href="/dashboard/influencers" label="Influencers" desc="Influencer discovery" />
-              <QuickAction href="/dashboard/users" label="Users" desc="Manage team access" />
-            </>
+            <QuickAction href="/dashboard/users" label="Users" desc="Manage team access" />
           )}
           {user?.role === 'INTERN' && (
-            <>
-              <QuickAction href="/dashboard/brands" label="Brands" desc="Explore brand data" />
-              <QuickAction href="/dashboard/influencers" label="Influencers" desc="Influencer discovery" />
-              <QuickAction href="/dashboard/work" label="My Work" desc="Track your tasks" />
-            </>
+            <QuickAction href="/dashboard/work" label="My Work" desc="Track your tasks" />
           )}
           {user?.role === 'DATA_ENTRY' && (
-            <>
-              <QuickAction href="/dashboard/brands" label="Brands" desc="Brand intelligence ecosystem" />
-              <QuickAction href="/dashboard/influencers" label="Influencers" desc="Influencer discovery database" />
-              <QuickAction href="/dashboard/upload" label="Upload Data" desc="Import CSV files" />
-            </>
+            <QuickAction href="/dashboard/upload" label="Upload Data" desc="Import CSV files" />
           )}
         </div>
       </div>

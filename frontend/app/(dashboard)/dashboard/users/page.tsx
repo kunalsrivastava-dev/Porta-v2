@@ -110,9 +110,9 @@ export default function UsersPage() {
       setInviteEmail('');
       // Refresh data for both tabs
       fetchData();
-      alert('SUCCESS: User identity pre-authorized and added to grid.');
+      alert('SUCCESS: User added successfully.');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'CRITICAL ERROR: Authorization failed');
+      alert(err.response?.data?.message || 'ERROR: Failed to add user');
     } finally {
       setIsInviting(false);
     }
@@ -265,13 +265,13 @@ export default function UsersPage() {
             </button>
             
             <div className="mb-6">
-              <h2 className="text-3xl font-black uppercase tracking-tight">Authorize Identity</h2>
-              <p className="text-[10px] font-bold text-grey-500 uppercase tracking-widest mt-1">Add email to approved whitelist</p>
+              <h2 className="text-3xl font-black uppercase tracking-tight">Add User</h2>
+              <p className="text-[10px] font-bold text-grey-500 uppercase tracking-widest mt-1">Invite a new user to the platform</p>
             </div>
 
             <form onSubmit={handleInvite} className="space-y-6">
               <Input
-                label="Identity Email"
+                label="Email Address"
                 type="email"
                 placeholder="name@company.com"
                 value={inviteEmail}
@@ -281,29 +281,22 @@ export default function UsersPage() {
               />
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-grey-400">Security Clearance (Role)</label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setInviteRole('ADMIN')}
-                    className={`h-12 border-4 border-black text-[9px] font-black uppercase tracking-widest transition-all ${inviteRole === 'ADMIN' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
+                <label className="text-[10px] font-black uppercase tracking-widest text-grey-400">Assigned Role</label>
+                <div className="relative">
+                  <select
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value as any)}
+                    className="w-full h-14 border-4 border-black bg-white px-4 text-xs font-black uppercase tracking-widest appearance-none focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
                   >
-                    Admin
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setInviteRole('DATA_ENTRY')}
-                    className={`h-12 border-4 border-black text-[9px] font-black uppercase tracking-widest transition-all ${inviteRole === 'DATA_ENTRY' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
-                  >
-                    Data Entry
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setInviteRole('INTERN')}
-                    className={`h-12 border-4 border-black text-[9px] font-black uppercase tracking-widest transition-all ${inviteRole === 'INTERN' ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white text-black'}`}
-                  >
-                    Intern
-                  </button>
+                    <option value="ADMIN">Admin</option>
+                    <option value="DATA_ENTRY">Data Entry</option>
+                    <option value="INTERN">Intern</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1.5L6 6.5L11 1.5" stroke="black" strokeWidth="2" strokeLinecap="square"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
 
@@ -313,7 +306,7 @@ export default function UsersPage() {
                   className="w-full h-16 bg-black text-white text-xs font-black uppercase tracking-widest rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                   isLoading={isInviting}
                 >
-                  Confirm Authorization
+                  Send Invitation
                 </Button>
               </div>
             </form>

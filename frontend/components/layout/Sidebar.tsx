@@ -52,9 +52,18 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     { label: 'Upload Data', href: '/dashboard/upload', icon: <Upload size={18} /> },
   ];
 
-  const navItems = user?.role === 'ADMIN' ? adminNavItems
+  let navItems = user?.role === 'ADMIN' ? adminNavItems
     : user?.role === 'DATA_ENTRY' ? dataEntryNavItems
       : internNavItems;
+
+  if (user?.permissions) {
+    if (!user.permissions.bde?.read) {
+      navItems = navItems.filter(item => item.label !== 'Brands');
+    }
+    if (!user.permissions.influencer?.read) {
+      navItems = navItems.filter(item => item.label !== 'Influencers');
+    }
+  }
 
   useEffect(() => {
     const check = () => {

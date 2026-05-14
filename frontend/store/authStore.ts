@@ -6,6 +6,10 @@ export interface User {
   name: string;
   email: string;
   role: 'ADMIN' | 'DATA_ENTRY' | 'INTERN';
+  permissions?: {
+    influencer: { read: boolean; write: boolean };
+    bde: { read: boolean; write: boolean };
+  };
 }
 
 interface AuthStore {
