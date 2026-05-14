@@ -2,8 +2,21 @@
 
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DataTable } from '@/components/leads/DataTable';
+import { useAuthStore } from '@/store/authStore';
 
 export default function BrandsPage() {
+  const { user } = useAuthStore();
+
+  if (user && user.role !== 'ADMIN' && !user.permissions?.bde?.read) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col h-full items-center justify-center">
+          <h1 className="text-2xl font-black uppercase text-red-500 tracking-tighter">Not authorized to do this</h1>
+          <p className="text-xs font-bold text-grey-500 uppercase mt-2">You lack the necessary security clearance.</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

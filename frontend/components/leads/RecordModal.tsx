@@ -36,7 +36,8 @@ export const RecordModal = ({ isOpen, onClose, type, record, onSuccess }: Record
       }
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Not authorized to do this');
       console.error('Operation failed', error);
     } finally {
       setLoading(false);

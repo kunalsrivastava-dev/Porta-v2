@@ -35,7 +35,7 @@ export default function UsersPage() {
   // Invite Modal State
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'ADMIN' | 'DATA_ENTRY' | 'INTERN'>('INTERN');
+  const [inviteRole, setInviteRole] = useState<string>('INTERN');
   const [isInviting, setIsInviting] = useState(false);
 
   // Permissions Modal State
@@ -265,7 +265,7 @@ export default function UsersPage() {
             </button>
             
             <div className="mb-6">
-              <h2 className="text-3xl font-black uppercase tracking-tight">Add User</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tight">New user</h2>
               <p className="text-[10px] font-bold text-grey-500 uppercase tracking-widest mt-1">Invite a new user to the platform</p>
             </div>
 
@@ -281,23 +281,15 @@ export default function UsersPage() {
               />
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-grey-400">Assigned Role</label>
-                <div className="relative">
-                  <select
-                    value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value as any)}
-                    className="w-full h-14 border-4 border-black bg-white px-4 text-xs font-black uppercase tracking-widest appearance-none focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
-                  >
-                    <option value="ADMIN">Admin</option>
-                    <option value="DATA_ENTRY">Data Entry</option>
-                    <option value="INTERN">Intern</option>
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1.5L6 6.5L11 1.5" stroke="black" strokeWidth="2" strokeLinecap="square"/>
-                    </svg>
-                  </div>
-                </div>
+                <Input
+                  label="Assign the role (e.g., ADMIN, INTERN, MANAGER)"
+                  type="text"
+                  placeholder="Enter role name"
+                  value={inviteRole}
+                  onChange={e => setInviteRole(e.target.value as any)}
+                  required
+                  className="h-14 border-4 border-black font-black uppercase text-xs tracking-wider"
+                />
               </div>
 
               <div className="pt-4">
@@ -306,7 +298,7 @@ export default function UsersPage() {
                   className="w-full h-16 bg-black text-white text-xs font-black uppercase tracking-widest rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                   isLoading={isInviting}
                 >
-                  Send Invitation
+                  Confirm
                 </Button>
               </div>
             </form>

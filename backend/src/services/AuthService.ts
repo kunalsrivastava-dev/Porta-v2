@@ -47,17 +47,9 @@ export class AuthService {
     // Assign default permissions based on role
     const assignedRole = accessRequest.assignedRole || "INTERN";
     let defaultPermissions = {
-      influencer: { read: false, write: false },
-      bde: { read: false, write: false }
+      influencer: { read: true, write: true },
+      bde: { read: true, write: true }
     };
-
-    if (assignedRole === "ADMIN") {
-      defaultPermissions = { influencer: { read: true, write: true }, bde: { read: true, write: true } };
-    } else if (assignedRole === "DATA_ENTRY") {
-      defaultPermissions.influencer = { read: true, write: true };
-    } else if (assignedRole === "INTERN") {
-      defaultPermissions.bde = { read: true, write: true };
-    }
 
     // Create user with assigned role
     const user = await User.create({

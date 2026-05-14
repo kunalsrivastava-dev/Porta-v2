@@ -82,7 +82,8 @@ export const DataTable = ({ type, title }: DataTableProps) => {
       await dataAPI.bulkDelete(selectedIds);
       setSelectedIds([]);
       fetchRecords();
-    } catch (error) {
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Not authorized to do this');
       console.error('Failed to delete records', error);
     }
   };
@@ -242,7 +243,8 @@ export const DataTable = ({ type, title }: DataTableProps) => {
                                 try {
                                   await dataAPI.updateData(record._id, { data: { ...record.data, outreach_status: newStatus } });
                                   fetchRecords();
-                                } catch (err) {
+                                } catch (err: any) {
+                                  alert(err.response?.data?.message || 'Not authorized to do this');
                                   console.error('Update failed', err);
                                 }
                               }}
