@@ -101,6 +101,38 @@ export class UserController {
     }
   }
 
+  // Update user permissions (admin only)
+  static async updateUserPermissions(req: AuthRequest, res: Response) {
+    try {
+      const { userId } = req.params;
+      const { permissions } = req.body;
+
+      if (!permissions) {
+        return res.status(400).json({
+          success: false,
+          message: "Permissions object is required",
+        });
+      }
+
+      const user = await UserService.updateUserPermissions(
+        userId,
+        permissions,
+        req.user!.userId
+      );
+
+      return res.json({
+        success: true,
+        message: "User permissions updated",
+        user,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
   // Toggle user status
   static async toggleUserStatus(req: AuthRequest, res: Response) {
     try {

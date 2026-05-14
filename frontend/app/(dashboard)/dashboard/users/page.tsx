@@ -11,7 +11,15 @@ import { Loader2, Search, UserPlus, Mail, XCircle } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 
-interface User { _id: string; name: string; email: string; role: string; isActive: boolean; createdAt: string; }
+interface User { 
+  _id: string; 
+  name: string; 
+  email: string; 
+  role: string; 
+  permissions?: { influencer: { read: boolean; write: boolean }; bde: { read: boolean; write: boolean } };
+  isActive: boolean; 
+  createdAt: string; 
+}
 interface Invitation { _id: string; email: string; assignedRole: string; status: string; createdAt: string; }
 
 export default function UsersPage() {
@@ -29,6 +37,11 @@ export default function UsersPage() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'ADMIN' | 'DATA_ENTRY' | 'INTERN'>('INTERN');
   const [isInviting, setIsInviting] = useState(false);
+
+  // Permissions Modal State
+  const [selectedUserForPerms, setSelectedUserForPerms] = useState<User | null>(null);
+  const [editingPermissions, setEditingPermissions] = useState<any>(null);
+  const [isUpdatingPerms, setIsUpdatingPerms] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user?.role !== 'ADMIN') router.push('/dashboard');
@@ -105,6 +118,22 @@ export default function UsersPage() {
     }
   };
 
+  const handleUpdatePermissions = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUserForPerms) return;
+    setIsUpdatingPerms(true);
+    try {
+      await userAPI.updateUserPermissions(selectedUserForPerms._id, editingPermissions);
+      setSelectedUserForPerms(null);
+      fetchData();
+      alert('SUCCESS: Identity permissions updated.');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'CRITICAL ERROR: Failed to update permissions');
+    } finally {
+      setIsUpdatingPerms(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       {/* Page header */}
@@ -155,7 +184,7 @@ export default function UsersPage() {
       <div className="border-4 border-black flex flex-col bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" style={{ height: 'calc(100% - 140px)' }}>
         {activeTab === 'users' ? (
           <>
-            <div className="grid grid-cols-[1.5fr_2fr_100px_100px_200px] bg-black text-white text-[10px] font-black uppercase tracking-widest px-6 py-4 shrink-0">
+            <div className="grid grid-cols-[1.5fr_2fr_100px_100px_250px] bg-black text-white text-[10px] font-black uppercase tracking-widest px-6 py-4 shrink-0">
               <span>Identity</span><span>Email</span><span>Role</span><span>Status</span><span className="text-right">Management</span>
             </div>
             <div className="flex-1 overflow-y-auto">
@@ -166,7 +195,7 @@ export default function UsersPage() {
               ) : filteredUsers.length === 0 ? (
                 <div className="flex items-center justify-center h-full font-black uppercase text-grey-400 text-xs">No active identities found</div>
               ) : filteredUsers.map(u => (
-                <div key={u._id} className="grid grid-cols-[1.5fr_2fr_100px_100px_200px] px-6 py-4 border-b-2 border-grey-100 items-center hover:bg-grey-50 text-[11px] group transition-colors">
+                <div key={u._id} className="grid grid-cols-[1.5fr_2fr_100px_100px_250px] px-6 py-4 border-b-2 border-grey-100 items-center hover:bg-grey-50 text-[11px] group transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-black text-xs uppercase">
                       {u.name.charAt(0)}
@@ -177,6 +206,15 @@ export default function UsersPage() {
                   <span><Badge className="rounded-none border-black font-black">{u.role}</Badge></span>
                   <span><Badge variant={u.isActive ? 'success' : 'error'} className="rounded-none font-black">{u.isActive ? 'ACTIVE' : 'LOCKED'}</Badge></span>
                   <div className="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button size="sm" variant="outline" className="text-[9px] font-black h-8 rounded-none border-2 border-black" onClick={() => {
+                      setSelectedUserForPerms(u);
+                      setEditingPermissions(u.permissions || {
+                        influencer: { read: false, write: false },
+                        bde: { read: false, write: false }
+                      });
+                    }}>
+                      PERMS
+                    </Button>
                     <Button size="sm" variant="outline" className="text-[9px] font-black h-8 rounded-none border-2 border-black" onClick={() => handleToggle(u._id, u.isActive)}>
                       {u.isActive ? 'LOCK' : 'UNLOCK'}
                     </Button>
@@ -276,6 +314,87 @@ export default function UsersPage() {
                   isLoading={isInviting}
                 >
                   Confirm Authorization
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
+
+      {/* Permissions Modal */}
+      {selectedUserForPerms && editingPermissions && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] backdrop-blur-sm animate-in fade-in duration-300">
+          <Card className="w-full max-w-lg p-8 border-4 border-black bg-white shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] relative overflow-hidden">
+            <button 
+              onClick={() => setSelectedUserForPerms(null)}
+              className="absolute top-4 right-4 text-grey-400 hover:text-black transition-colors"
+            >
+              <XCircle size={24} />
+            </button>
+            
+            <div className="mb-6">
+              <h2 className="text-3xl font-black uppercase tracking-tight">Access Matrix</h2>
+              <p className="text-[10px] font-bold text-grey-500 uppercase tracking-widest mt-1">Configure data clearance for {selectedUserForPerms.name}</p>
+            </div>
+
+            <form onSubmit={handleUpdatePermissions} className="space-y-6">
+              <div className="space-y-4">
+                <div className="border-2 border-black p-4">
+                  <h3 className="text-xs font-black uppercase tracking-widest mb-3">Influencer Data</h3>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 text-[10px] font-black uppercase cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={editingPermissions.influencer.read}
+                        onChange={(e) => setEditingPermissions({...editingPermissions, influencer: {...editingPermissions.influencer, read: e.target.checked}})}
+                        className="w-4 h-4 accent-black border-2 border-black rounded-none"
+                      />
+                      Read Access
+                    </label>
+                    <label className="flex items-center gap-2 text-[10px] font-black uppercase cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={editingPermissions.influencer.write}
+                        onChange={(e) => setEditingPermissions({...editingPermissions, influencer: {...editingPermissions.influencer, write: e.target.checked}})}
+                        className="w-4 h-4 accent-black border-2 border-black rounded-none"
+                      />
+                      Write Access
+                    </label>
+                  </div>
+                </div>
+
+                <div className="border-2 border-black p-4">
+                  <h3 className="text-xs font-black uppercase tracking-widest mb-3">BDE Data (Brands & Leads)</h3>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 text-[10px] font-black uppercase cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={editingPermissions.bde.read}
+                        onChange={(e) => setEditingPermissions({...editingPermissions, bde: {...editingPermissions.bde, read: e.target.checked}})}
+                        className="w-4 h-4 accent-black border-2 border-black rounded-none"
+                      />
+                      Read Access
+                    </label>
+                    <label className="flex items-center gap-2 text-[10px] font-black uppercase cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={editingPermissions.bde.write}
+                        onChange={(e) => setEditingPermissions({...editingPermissions, bde: {...editingPermissions.bde, write: e.target.checked}})}
+                        className="w-4 h-4 accent-black border-2 border-black rounded-none"
+                      />
+                      Write Access
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <Button 
+                  type="submit" 
+                  className="w-full h-16 bg-black text-white text-xs font-black uppercase tracking-widest rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                  isLoading={isUpdatingPerms}
+                >
+                  Update Access Matrix
                 </Button>
               </div>
             </form>

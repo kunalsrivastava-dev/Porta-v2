@@ -44,12 +44,28 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcryptjs.hash(password, 12);
 
+    // Assign default permissions based on role
+    const assignedRole = accessRequest.assignedRole || "INTERN";
+    let defaultPermissions = {
+      influencer: { read: false, write: false },
+      bde: { read: false, write: false }
+    };
+    
+    if (assignedRole === "ADMIN") {
+      defaultPermissions = { influencer: { read: true, write: true }, bde: { read: true, write: true } };
+    } else if (assignedRole === "DATA_ENTRY") {
+      defaultPermissions.influencer = { read: true, write: true };
+    } else if (assignedRole === "INTERN") {
+      defaultPermissions.bde = { read: true, write: true };
+    }
+
     // Create user with assigned role
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase(),
       password: hashedPassword,
-      role: accessRequest.assignedRole || "INTERN",
+      role: assignedRole,
+      permissions: defaultPermissions,
       isApproved: true,
       isActive: true,
     });
@@ -159,12 +175,14 @@ export class AuthService {
                 email: email.toLowerCase(),
                 password: hashedPassword,
                 role: "ADMIN",
+                permissions: { influencer: { read: true, write: true }, bde: { read: true, write: true } },
                 isApproved: true,
                 isActive: true
               });
             } else {
               // Update role and password if it's different
               user.role = "ADMIN";
+              user.permissions = { influencer: { read: true, write: true }, bde: { read: true, write: true } };
               user.password = await bcryptjs.hash(password, 12);
               await user.save();
             }

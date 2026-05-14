@@ -6,6 +6,19 @@ import csvParser from "csv-parser";
 import { Readable } from "stream";
 import mongoose from "mongoose";
 import { IntelligenceEngine } from "../utils/IntelligenceEngine.js";
+import User from "../models/User.js";
+
+async function checkWritePermission(userId: string, type: string): Promise<boolean> {
+  const user = await User.findById(userId);
+  if (!user) return false;
+  
+  if (type === 'INFLUENCER') {
+    return user.permissions?.influencer?.write === true;
+  } else if (type === 'LEAD' || type === 'BRAND') {
+    return user.permissions?.bde?.write === true;
+  }
+  return false;
+}
 
 export class DataController {
   /**
@@ -20,6 +33,14 @@ export class DataController {
         return res.status(400).json({
           success: false,
           message: "Valid data type (LEAD, BRAND, INFLUENCER) is required",
+        });
+      }
+
+      const hasAccess = await checkWritePermission(req.user!.userId, type);
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          message: "Insufficient permissions to upload this data type",
         });
       }
 
@@ -136,6 +157,14 @@ export class DataController {
         });
       }
 
+      const hasAccess = await checkWritePermission(req.user!.userId, type);
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          message: "Insufficient permissions to create this data type",
+        });
+      }
+
       if (!data.outreach_status) {
         data.outreach_status = 'NEW';
       }
@@ -177,7 +206,26 @@ export class DataController {
       const { type, status, tags, assignedTo, search, outreach_status } = req.query;
       const query: any = {};
 
-      if (type) query.type = type;
+      const user = await User.findById(req.user!.userId);
+      if (!user) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+      const allowedTypes = [];
+      if (user.permissions?.influencer?.read) allowedTypes.push('INFLUENCER');
+      if (user.permissions?.bde?.read) allowedTypes.push('LEAD', 'BRAND');
+
+      if (allowedTypes.length === 0) {
+        return res.json({ success: true, data: [], count: 0 }); // No access
+      }
+
+      if (type) {
+        if (!allowedTypes.includes(type as string)) {
+          return res.status(403).json({ success: false, message: "No read access for this data type" });
+        }
+        query.type = type;
+      } else {
+        query.type = { $in: allowedTypes };
+      }
+
       if (status) {
         const statusArray = String(status).split(',');
         query.status = { $in: statusArray };
@@ -232,7 +280,22 @@ export class DataController {
     try {
       const { type } = req.query;
       const query: any = {};
-      if (type) query.type = type;
+
+      const user = await User.findById(req.user!.userId);
+      const allowedTypes = [];
+      if (user?.permissions?.influencer?.read) allowedTypes.push('INFLUENCER');
+      if (user?.permissions?.bde?.read) allowedTypes.push('LEAD', 'BRAND');
+
+      if (allowedTypes.length === 0) {
+        return res.json({ success: true, data: { statusDistribution: [], typeDistribution: [], timeline: [] } });
+      }
+
+      if (type) {
+        if (!allowedTypes.includes(type as string)) return res.json({ success: true, data: { statusDistribution: [], typeDistribution: [], timeline: [] } });
+        query.type = type;
+      } else {
+        query.type = { $in: allowedTypes };
+      }
 
       const statusStats = await DataRecord.aggregate([
         { $match: query },
@@ -292,6 +355,17 @@ export class DataController {
       const { status, assignedTo, notes, data } = req.body;
 
       const update: any = {};
+
+      const currentRecord = await DataRecord.findById(id);
+      if (!currentRecord) {
+        return res.status(404).json({ success: false, message: "Record not found" });
+      }
+
+      const hasAccess = await checkWritePermission(req.user!.userId, currentRecord.type);
+      if (!hasAccess) {
+        return res.status(403).json({ success: false, message: "Insufficient permissions to update this data type" });
+      }
+
       if (status) update.status = status;
       if (assignedTo) update.assignedTo = assignedTo;
       if (data) update.data = data; // Data Entry can change values
@@ -300,12 +374,8 @@ export class DataController {
       }
 
       const record = await DataRecord.findByIdAndUpdate(id, update, { new: true });
-
       if (!record) {
-        return res.status(404).json({
-          success: false,
-          message: "Record not found",
-        });
+        return res.status(404).json({ success: false, message: "Record not found during update" });
       }
 
       // Log activity
@@ -345,6 +415,11 @@ export class DataController {
         });
       }
 
+      const hasAccess = await checkWritePermission(req.user!.userId, record.type);
+      if (!hasAccess) {
+        return res.status(403).json({ success: false, message: "Insufficient permissions to delete this data type" });
+      }
+
       await DataRecord.findByIdAndDelete(id);
 
       // Log activity
@@ -380,6 +455,15 @@ export class DataController {
           success: false,
           message: "No record IDs provided",
         });
+      }
+
+      // Check permissions for all records being deleted
+      const records = await DataRecord.find({ _id: { $in: ids } });
+      for (const record of records) {
+        const hasAccess = await checkWritePermission(req.user!.userId, record.type);
+        if (!hasAccess) {
+          return res.status(403).json({ success: false, message: "Insufficient permissions to delete one or more of these records" });
+        }
       }
 
       const result = await DataRecord.deleteMany({ _id: { $in: ids } });

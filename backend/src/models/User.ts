@@ -5,6 +5,10 @@ interface IUser {
   email: string;
   password: string;
   role: "ADMIN" | "DATA_ENTRY" | "INTERN";
+  permissions: {
+    influencer: { read: boolean; write: boolean };
+    bde: { read: boolean; write: boolean };
+  };
   isApproved: boolean;
   isActive: boolean;
   createdAt: Date;
@@ -34,6 +38,16 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       enum: ["ADMIN", "DATA_ENTRY", "INTERN"],
       default: "INTERN",
+    },
+    permissions: {
+      influencer: {
+        read: { type: Boolean, default: false },
+        write: { type: Boolean, default: false },
+      },
+      bde: {
+        read: { type: Boolean, default: false },
+        write: { type: Boolean, default: false },
+      },
     },
     isApproved: {
       type: Boolean,

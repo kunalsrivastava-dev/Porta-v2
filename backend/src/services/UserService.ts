@@ -59,6 +59,34 @@ export class UserService {
     return user;
   }
 
+  // Update user permissions
+  static async updateUserPermissions(
+    userId: string,
+    permissions: any,
+    adminId: string
+  ) {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { permissions },
+      { new: true }
+    );
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Log activity
+    await ActivityLog.create({
+      userId: adminId,
+      action: "UPDATE_USER",
+      resource: "User",
+      resourceId: userId,
+      details: { updatedPermissions: true },
+    });
+
+    return user;
+  }
+
   // Activate/deactivate user
   static async toggleUserStatus(userId: string, isActive: boolean, adminId: string) {
     const user = await User.findByIdAndUpdate(

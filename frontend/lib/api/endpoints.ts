@@ -31,6 +31,9 @@ export const userAPI = {
   updateUserRole: (userId: string, role: string) =>
     api.patch(`/users/${userId}/role`, { role }),
   
+  updateUserPermissions: (userId: string, permissions: any) =>
+    api.patch(`/users/${userId}/permissions`, { permissions }),
+  
   toggleUserStatus: (userId: string, isActive: boolean) =>
     api.patch(`/users/${userId}/status`, { isActive }),
   
