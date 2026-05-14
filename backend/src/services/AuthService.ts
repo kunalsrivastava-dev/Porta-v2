@@ -45,7 +45,7 @@ export class AuthService {
     const hashedPassword = await bcryptjs.hash(password, 12);
 
     // Assign default permissions based on role
-    const assignedRole = accessRequest.assignedRole || "INTERN";
+    const assignedRole = accessRequest.assignedRole || "BDA";
     let defaultPermissions = {
       influencer: { read: true, write: true },
       bde: { read: true, write: true }
@@ -136,7 +136,7 @@ export class AuthService {
     return {
       approved: true,
       registered: !!user,
-      role: user?.role || approval.assignedRole || "INTERN"
+      role: user?.role || approval.assignedRole || "BDA"
     };
   }
 

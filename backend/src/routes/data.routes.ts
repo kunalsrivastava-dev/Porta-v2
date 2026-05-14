@@ -12,7 +12,7 @@ router.use(authMiddleware);
 // Upload data
 router.post(
   "/upload",
-  authorize(["ADMIN", "DATA_ENTRY", "INTERN"]),
+  authorize(["ADMIN", "DATA_ENTRY", "BDA"]),
   upload.single("file"),
   DataController.uploadData
 );
@@ -20,7 +20,7 @@ router.post(
 // Create manual record
 router.post(
   "/",
-  authorize(["ADMIN", "DATA_ENTRY", "INTERN"]),
+  authorize(["ADMIN", "DATA_ENTRY", "BDA"]),
   DataController.createRecord
 );
 
@@ -30,20 +30,20 @@ router.get("/", DataController.getData);
 // Get stats - All roles
 router.get("/stats", DataController.getStats);
 
-// Update data - Admin, Data Entry, Intern
+// Update data - Admin, Data Entry, BDA
 router.patch(
   "/:id",
-  authorize(["ADMIN", "DATA_ENTRY", "INTERN"]),
+  authorize(["ADMIN", "DATA_ENTRY", "BDA"]),
   DataController.updateData
 );
 
 // Delete data
-router.delete("/:id", authorize(["ADMIN", "DATA_ENTRY", "INTERN"]), DataController.deleteData);
+router.delete("/:id", authorize(["ADMIN", "DATA_ENTRY", "BDA"]), DataController.deleteData);
 
 // Bulk delete data
 router.post(
   "/bulk-delete",
-  authorize(["ADMIN", "DATA_ENTRY", "INTERN"]),
+  authorize(["ADMIN", "DATA_ENTRY", "BDA"]),
   DataController.bulkDelete
 );
 

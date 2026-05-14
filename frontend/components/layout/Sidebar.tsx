@@ -38,7 +38,7 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
     { label: 'Users', href: '/dashboard/users', icon: <Users size={18} /> },
   ];
 
-  const internNavItems = [
+  const bdaNavItems = [
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
     { label: 'Brands', href: '/dashboard/brands', icon: <Building2 size={18} /> },
     { label: 'Influencers', href: '/dashboard/influencers', icon: <Sparkles size={18} /> },
@@ -54,7 +54,7 @@ export const Sidebar = ({ onToggle }: SidebarProps) => {
 
   let navItems = user?.role === 'ADMIN' ? adminNavItems
     : user?.role === 'DATA_ENTRY' ? dataEntryNavItems
-      : internNavItems;
+      : bdaNavItems;
 
   if (user?.permissions) {
     if (!user.permissions.bde?.read) {

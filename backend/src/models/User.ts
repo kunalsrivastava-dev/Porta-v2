@@ -4,7 +4,7 @@ interface IUser {
   name: string;
   email: string;
   password: string;
-  role: "ADMIN" | "DATA_ENTRY" | "INTERN";
+  role: "ADMIN" | "DATA_ENTRY" | "BDA";
   permissions: {
     influencer: { read: boolean; write: boolean };
     bde: { read: boolean; write: boolean };
@@ -36,8 +36,8 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["ADMIN", "DATA_ENTRY", "INTERN"],
-      default: "INTERN",
+      enum: ["ADMIN", "DATA_ENTRY", "BDA"],
+      default: "BDA",
     },
     permissions: {
       influencer: {

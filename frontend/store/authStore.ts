@@ -5,7 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'ADMIN' | 'DATA_ENTRY' | 'INTERN';
+  role: 'ADMIN' | 'DATA_ENTRY' | 'BDA';
   permissions?: {
     influencer: { read: boolean; write: boolean };
     bde: { read: boolean; write: boolean };

@@ -34,7 +34,7 @@ export class UserService {
   // Update user role
   static async updateUserRole(
     userId: string,
-    newRole: "ADMIN" | "DATA_ENTRY" | "INTERN",
+    newRole: "ADMIN" | "DATA_ENTRY" | "BDA",
     adminId: string
   ) {
     const user = await User.findByIdAndUpdate(
@@ -136,7 +136,7 @@ export class UserService {
     const totalUsers = await User.countDocuments();
     const adminCount = await User.countDocuments({ role: "ADMIN" });
     const dataEntryCount = await User.countDocuments({ role: "DATA_ENTRY" });
-    const internCount = await User.countDocuments({ role: "INTERN" });
+    const internCount = await User.countDocuments({ role: "BDA" });
     const activeUsers = await User.countDocuments({ isActive: true });
 
     return {

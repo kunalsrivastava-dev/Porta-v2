@@ -75,7 +75,7 @@ export class UserController {
         });
       }
 
-      if (!["ADMIN", "DATA_ENTRY", "INTERN"].includes(role)) {
+      if (!["ADMIN", "DATA_ENTRY", "BDA"].includes(role)) {
         return res.status(400).json({
           success: false,
           message: "Invalid role",

@@ -30,7 +30,7 @@ export default function DashboardPage() {
           <p className="text-grey-500 text-sm font-bold uppercase tracking-widest mt-1">
             {user?.role === 'ADMIN' ? 'System Administrator'
               : user?.role === 'DATA_ENTRY' ? 'Data Entry Operator'
-              : 'Intern Dashboard'}
+              : 'BDA Dashboard'}
           </p>
         </div>
 
@@ -68,7 +68,7 @@ export default function DashboardPage() {
           {user?.role === 'ADMIN' && (
             <QuickAction href="/dashboard/users" label="Users" desc="Manage team access" />
           )}
-          {user?.role === 'INTERN' && (
+          {user?.role === 'BDA' && (
             <QuickAction href="/dashboard/work" label="My Work" desc="Track your tasks" />
           )}
           {user?.role === 'DATA_ENTRY' && (

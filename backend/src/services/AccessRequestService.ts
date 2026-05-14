@@ -45,7 +45,7 @@ export class AccessRequestService {
   static async approveRequest(
     requestId: string,
     adminId: string,
-    role: "DATA_ENTRY" | "INTERN"
+    role: "DATA_ENTRY" | "BDA"
   ) {
     const request = await AccessRequest.findByIdAndUpdate(
       requestId,
@@ -117,7 +117,7 @@ export class AccessRequestService {
   }
 
   // Invite a user manually (admin only)
-  static async inviteUser(email: string, role: "ADMIN" | "DATA_ENTRY" | "INTERN", adminId: string) {
+  static async inviteUser(email: string, role: "ADMIN" | "DATA_ENTRY" | "BDA", adminId: string) {
     const existing = await AccessRequest.findOne({ email: email.toLowerCase() });
     
     if (existing && existing.status === "approved") {

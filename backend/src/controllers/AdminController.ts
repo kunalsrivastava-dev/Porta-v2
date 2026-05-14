@@ -54,17 +54,17 @@ export class AdminController {
         });
       }
 
-      if (!role || !["DATA_ENTRY", "INTERN"].includes(role)) {
+      if (!role || !["DATA_ENTRY", "BDA"].includes(role)) {
         return res.status(400).json({
           success: false,
-          message: "A valid role (DATA_ENTRY or INTERN) is required",
+          message: "A valid role (DATA_ENTRY or BDA) is required",
         });
       }
  
       const result = await AccessRequestService.approveRequest(
         requestId,
         req.user!.userId,
-        role as "DATA_ENTRY" | "INTERN"
+        role as "DATA_ENTRY" | "BDA"
       );
 
       return res.json({
@@ -117,16 +117,16 @@ export class AdminController {
     try {
       const { email, role } = req.body;
 
-      if (!email || !role || !["ADMIN", "DATA_ENTRY", "INTERN"].includes(role)) {
+      if (!email || !role || !["ADMIN", "DATA_ENTRY", "BDA"].includes(role)) {
         return res.status(400).json({
           success: false,
-          message: "Email and valid role (ADMIN, DATA_ENTRY or INTERN) are required",
+          message: "Email and valid role (ADMIN, DATA_ENTRY or BDA) are required",
         });
       }
 
       const result = await AccessRequestService.inviteUser(
         email,
-        role as "ADMIN" | "DATA_ENTRY" | "INTERN",
+        role as "ADMIN" | "DATA_ENTRY" | "BDA",
         req.user!.userId
       );
 

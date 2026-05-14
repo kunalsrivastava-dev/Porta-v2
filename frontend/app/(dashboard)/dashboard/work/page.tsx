@@ -11,7 +11,7 @@ export default function InternWorkPage() {
   const { user, isLoading: authLoading } = useAuthStore();
 
   useEffect(() => {
-    if (!authLoading && (user?.role !== 'INTERN' && user?.role !== 'ADMIN')) {
+    if (!authLoading && (user?.role !== 'BDA' && user?.role !== 'ADMIN')) {
       router.push('/dashboard');
     }
   }, [authLoading, user, router]);
