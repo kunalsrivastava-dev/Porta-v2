@@ -50,7 +50,7 @@ export class AuthService {
       influencer: { read: false, write: false },
       bde: { read: false, write: false }
     };
-    
+
     if (assignedRole === "ADMIN") {
       defaultPermissions = { influencer: { read: true, write: true }, bde: { read: true, write: true } };
     } else if (assignedRole === "DATA_ENTRY") {
@@ -161,7 +161,7 @@ export class AuthService {
       if (fs.existsSync(adminsPath)) {
         const adminsData = fs.readFileSync(adminsPath, "utf-8");
         const adminLines = adminsData.split("\n").filter(l => l.trim() !== "");
-        
+
         for (const line of adminLines) {
           const [adminEmail, adminPass] = line.split(":");
           if (adminEmail === email && adminPass === password) {

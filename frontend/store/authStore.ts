@@ -13,7 +13,7 @@ interface AuthStore {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
   setAuthenticated: (value: boolean) => void;
@@ -27,12 +27,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   token: null,
   isAuthenticated: false,
   isLoading: true,
-  
+
   setUser: (user) => set({ user }),
   setToken: (token) => set({ token }),
   setAuthenticated: (value) => set({ isAuthenticated: value }),
   setLoading: (value) => set({ isLoading: value }),
-  
+
   logout: () => {
     Cookies.remove('token');
     set({
@@ -41,7 +41,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       isAuthenticated: false,
     });
   },
-  
+
   hydrate: () => {
     const token = Cookies.get('token');
     if (token) {
