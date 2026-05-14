@@ -3,6 +3,7 @@
 import { useAuthStore } from '@/store/authStore';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 
 
@@ -81,11 +82,11 @@ export default function DashboardPage() {
 }
 
 const QuickAction = ({ href, label, desc }: { href: string; label: string; desc: string }) => (
-  <a
+  <Link
     href={href}
     className="block border-4 border-black p-4 hover:bg-black hover:text-white transition-all group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
   >
     <div className="text-sm font-black uppercase tracking-widest">{label}</div>
     <div className="text-xs font-bold opacity-60 mt-1 group-hover:opacity-90">{desc}</div>
-  </a>
+  </Link>
 );

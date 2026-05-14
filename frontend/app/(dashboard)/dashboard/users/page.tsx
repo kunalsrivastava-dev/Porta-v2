@@ -83,6 +83,11 @@ export default function UsersPage() {
     setUsers(u => u.map(x => x._id === id ? { ...x, isActive: !current } : x));
   };
 
+  const handleRoleChange = async (id: string, newRole: string) => {
+    await userAPI.updateUserRole(id, newRole).catch(console.error);
+    setUsers(u => u.map(x => x._id === id ? { ...x, role: newRole as any } : x));
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this user?')) return;
     await userAPI.deleteUser(id).catch(console.error);
@@ -203,7 +208,17 @@ export default function UsersPage() {
                     <span className="font-black uppercase truncate">{u.name}</span>
                   </div>
                   <span className="text-grey-600 truncate font-bold">{u.email}</span>
-                  <span><Badge className="rounded-none border-black font-black">{u.role}</Badge></span>
+                  <span>
+                    <select
+                      value={u.role}
+                      onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                      className="border-2 border-black px-2 py-1 bg-white text-[10px] font-black uppercase tracking-widest cursor-pointer outline-none hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow"
+                    >
+                      <option value="ADMIN">ADMIN</option>
+                      <option value="DATA_ENTRY">DATA ENTRY</option>
+                      <option value="BDA">BDA</option>
+                    </select>
+                  </span>
                   <span><Badge variant={u.isActive ? 'success' : 'error'} className="rounded-none font-black">{u.isActive ? 'ACTIVE' : 'LOCKED'}</Badge></span>
                   <div className="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button size="sm" variant="outline" className="text-[9px] font-black h-8 rounded-none border-2 border-black" onClick={() => {

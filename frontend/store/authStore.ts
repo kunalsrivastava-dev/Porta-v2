@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
+import { userAPI } from '@/lib/api/endpoints';
 
 export interface User {
   id: string;
@@ -46,13 +47,24 @@ export const useAuthStore = create<AuthStore>((set) => ({
     });
   },
 
-  hydrate: () => {
+  hydrate: async () => {
     const token = Cookies.get('token');
     if (token) {
       set({
         token,
         isAuthenticated: true,
+        isLoading: true, // Keep loading while we fetch user
       });
+      try {
+        const res = await userAPI.getCurrentUser();
+        set({ user: res.data.user });
+      } catch (err: any) {
+        console.error('Failed to restore user session', err);
+        if (err.response?.status === 401) {
+          Cookies.remove('token');
+          set({ isAuthenticated: false, token: null });
+        }
+      }
     }
     set({ isLoading: false });
   },
